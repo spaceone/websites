@@ -1,0 +1,134 @@
+@charset "utf-8";
+
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+html, body {
+	width: 100%;
+	height:100%;
+
+    background: #ffa500 url('/images/bg.png') fixed repeat !important;
+	color: #fff;
+	font-family: 'Arial';
+}
+
+div#margin {
+	margin: 0 auto;
+	width: 1000px;
+/*	height: 100%;*/
+	height:auto !important;
+
+	background: transparent;
+	border-radius: 55px;
+	border-left: 2px solid #2085F1;
+	border-bottom: 2px solid #2085F1;
+	border-right: 2px solid #DE0027;
+	border-top: 2px solid #DE0027;
+}
+
+div#logo {
+	height: 300px;
+	overflow: hidden;
+	background-image: url('/images/header.png');
+
+	border-top-left-radius: 50px;
+	border-top-right-radius: 50px;
+	border: thin solid #50B5EE;
+	border-bottom-color: #ff0000;
+/*	border-bottom: 0 none;*/
+}
+
+div#navigation {
+	height: 25px;
+	width: 100%;
+
+/*	border-left: thin solid #50B5EE; */
+	/*background-color: #ffffff!important;*/
+	background-color:#2085f1;
+	border-bottom: thin solid #ff0000;
+	border-top: thin solid #50B5EE;
+	border-bottom: thin solid #50B5EE;
+}
+
+div#content {
+	height: auto;
+	overflow: hidden;
+	padding: 0 5% 140px;
+	min-height: 200px;
+
+	background-color: #ffffff!important;
+	background-image: url('/images/cansbg.png');
+	background-position: bottom right;
+	background-repeat: no-repeat;
+
+	border-top: thin solid #ff0000;
+	border-left: thin solid #50B5EE;
+	border-bottom: thin solid #50B5EE;
+	border-right: thin solid #50B5EE;
+	border-bottom-right-radius: 50px;
+	border-bottom-left-radius: 50px;
+	border-bottom: thin solid #50B5EE;
+}
+
+#footer {
+	text-align: center;
+}
+
+/** navigation **/
+div#navigation a,
+div#navigation {
+	color: #fff;
+	text-decoration: none;
+}
+div#navigation a:hover {
+	text-decoration: underline;
+}
+	
+ul, ol {
+	list-style-position: inside;
+}
+ul.navi {
+	list-style-type:none;
+}
+ul.navi li {
+	height: 25px;
+	padding: 0 1em;
+	border-right: thin solid #50B5EE;
+	vertical-align: middle;
+	line-height: 25px;
+	float: left;
+}
+ul.navi li b {
+	color: #50B5EE;
+	font-weight: normal;
+}
+
+/** content **/
+span.bordered {
+	padding: 0;
+	padding-bottom: 25px;
+	display: inline-block;
+/*	border: thin solid #2085F1;*/
+}
+div#content img {
+	border: thin solid #2085F1;
+}
+div#content p {
+/*	text-align: center;*/
+	margin: 0 auto;
+	margin-bottom: 15px;
+}
+
+a,
+div#content {
+	color: #2085F1;
+}
+p.copyright {
+	color: #50B5EE;
+}
+h1 {
+	text-align: center;
+}

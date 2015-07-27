@@ -1,0 +1,37 @@
+.page header .title,
+.page footer .author {
+	float: left;
+}
+
+.page header .creation,
+.page footer .modify_date,
+.page footer .views {
+	float: right;
+}
+
+.page header .title,
+.page header .creation {
+	width: 45%;
+}
+
+.page footer .modify_date,
+.page footer .views,
+.page footer .author {
+	width: 30%;
+}
+
+.page header {
+	border-bottom: thin solid;
+	height: 30px;
+}
+
+.page article {
+	border-bottom: thin solid;
+	margin: 2em 0;
+}
+
+.page {
+	overflow: auto;
+	width: 100%
+	margin-bottom: 2em;
+}

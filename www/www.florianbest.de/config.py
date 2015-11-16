@@ -1,3 +1,7 @@
+from ConfigParser import ConfigParser
+import os.path
+import ast
+
 class HTML(object): pass
 
 
@@ -25,17 +29,17 @@ class CSS(Link):
 
 def config():
 	c = ConfigParser()
-	c.read('config.cfg')
+	c.read(os.path.join(os.path.dirname(__file__), 'config.cfg'))
 	config = dict((x, ast.literal_eval(y)) for x, y in c.items('website'))
 	config.update(dict(
-		sf=type('', (object,), {'design': 'SF', 'layout': 'space', 'layoutcolor': 'green', 'display': type('', (object,), {'navileft':False, 'shell': False, 'naviright': False, 'details': False})})
-		user=type('USER', (object,), {'is_logged_in' : False, 'is_guest':True})
-		_=lambda x:x
+		sf=type('', (object,), {'design': 'SF', 'layout': 'space', 'layoutcolor': 'green', 'display': type('', (object,), {'navileft':False, 'shell': False, 'naviright': False, 'details': False})}),
+		user=type('USER', (object,), {'is_logged_in' : False, 'is_guest':True}),
+		_=lambda x:x,
 	))
 	config['meta'] = [Meta(x, ast.literal_eval(y)) for x, y in c.items('website_meta')]
 	config['meta'] += [Meta(x, ast.literal_eval(y), True) for x, y in c.items('website_meta_http')]
 
-	links = [(x, ast.literal_eval(y.replace('$', '%'))) for x, y in c.items('website_links')]
+	links = dict((x, ast.literal_eval(y.replace('$', '%'))) for x, y in c.items('website_links'))
 	config['links'] = []
 	config['links'] += [CSS(x % config) for x in links['stylesheet']]
 	config['links'] += [Link('icon', links['icon_type'], x % config) for x in links['icon']]

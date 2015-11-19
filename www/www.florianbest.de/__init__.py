@@ -17,6 +17,7 @@ class Domain(_Domain):
 
 	def __init__(self, *args, **kwargs):
 		super(Domain, self).__init__(*args, **kwargs)
+		self.aliases.add(self.fqdn.replace('www.', ''))
 
 		self.www_path = os.path.realpath(os.path.dirname(__file__))
 		self.template_path = os.path.join(self.www_path, 'templates')

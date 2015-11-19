@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import base64
 
-from httoop import FOUND, URI
+from httoop import FOUND, URI, UNAUTHORIZED
 from circuits.http.server.resource import method
 
 from .base import Resource
@@ -15,9 +15,9 @@ class Index(Resource):
 	path = '/'
 
 	@method
-	def GET(self, client):
+	def GET(self, client, _):
 		return dict(
-			content='Hello World!',
+			content=_('Hello World!'),
 			username=client.user.username,
 			ip=client.remote.ip,
 			hostname=client.remote.name,
@@ -32,8 +32,9 @@ class Header(Resource):
 	@method
 	def GET(self, client):
 		headers = dict(client.request.headers.items())
-		if 'Authorization' in headers:
-			headers['Authorization'] = '***'
+		for authorization in ('Authorization', 'Proxy-Authorization'):
+			if authorization in headers:
+				headers[authorization] = '***'
 
 		return dict(headers=headers.items(), params=dict(client.request.uri.query).items())
 
@@ -45,10 +46,15 @@ class Login(Resource):
 	"""
 	path = '/login'
 
+	def _require_authentication(client):
+		if client.user.is_guest:
+			raise UNAUTHORIZED('basic realm="%s"' % (client.domain.fqdn,))  # TODO: implement some component for this
+		return True
+
 	@method
 	def GET(self, client, _):
 		return _('Welcome %s, you are logged in.') % client.user.username
-	GET.conditions(lambda client: not client.user.is_guest)
+	GET.conditions(_require_authentication)
 
 
 class Logout(Resource):

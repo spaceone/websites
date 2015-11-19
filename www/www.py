@@ -46,7 +46,7 @@ class Server(HTTPServer):
 		response = client.response
 
 		if response.status > 399:
-			print((int(response.status), unicode(request.method), unicode(request.uri.uri)))
+			print((int(response.status), unicode(request.method), tuple(request.protocol), unicode(request.uri.uri)))
 			pprint(dict(request.headers))
 
 

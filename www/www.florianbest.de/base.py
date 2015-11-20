@@ -37,6 +37,9 @@ class Resource(Resource):
 		content = client.data
 		if not isinstance(content, dict):
 			content = dict(content=content)
+		content.update(dict(
+			user=client.user,
+		))
 		return content
 
 	def template_path(self, client):
@@ -81,7 +84,10 @@ class Resource(Resource):
 		return 'website.tpl'
 
 	def website_tplvars(self, client):
-		tplvars = dict(content=unicode(client.response.body))
+		tplvars = dict(
+			content=unicode(client.response.body),
+			user=client.user,
+		)
 		tplvars.update(config())
 #		for iname, prop in inspect.getmembers(self.__class__, lambda prop: isinstance(prop, websiteproperty)):
 #			tplvars[prop.name] = getattr(self, iname)

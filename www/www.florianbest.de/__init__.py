@@ -8,23 +8,24 @@ from ConfigParser import ConfigParser
 from circuits.http.server.resource import Domain as _Domain
 from .website import Index, Header, Login, Logout, Favicon
 from .robots import Robots
-#from .cms import Page, Navigation
+from .cms import Page, Navigation
 from .color import Color
 from .static import JavaScript, CascadeStyleSheet, Images
+from .db import create_engine, sessionmaker
 
 
 class Domain(_Domain):
 
 	def __init__(self, *args, **kwargs):
-		super(Domain, self).__init__(*args, **kwargs)
-		self.aliases.add(self.fqdn.replace('www.', ''))
-
 		self.www_path = os.path.realpath(os.path.dirname(__file__))
 		self.template_path = os.path.join(self.www_path, 'templates')
 		self.static_path = os.path.join(self.www_path, 'files')
 
 		self.config = ConfigParser()
 		self.config.read(os.path.join(self.www_path, 'config.cfg'))
+
+		super(Domain, self).__init__(*args, **kwargs)
+		self.aliases.add(self.fqdn.replace('www.', ''))
 
 		root = Index(channel='website-index')
 		self += root
@@ -35,12 +36,17 @@ class Domain(_Domain):
 		root += Favicon(channel='website-favicon')
 		root += Robots(channel='website-robots')
 		root += Color(channel='website-layoutcolors')
-#		root += Page(channel='website-cms-page')
+		root += Page(channel='website-cms-page')
 		root += JavaScript(channel='website-javascript')
 		root += CascadeStyleSheet(channel='website-css')
 		root += Images(channel='website-images')
-#		root += Navigation(channel='website-navigation')
+		root += Navigation(channel='website-navigation')
 #		root += (channel='website-')
+
+	def init(self, *args, **kwargs):
+		engine = create_engine(self.config.get('base', 'sql_uri'))
+		engine.connect()
+		self.session = sessionmaker(bind=engine)()
 
 
 def main(server, fqdn):

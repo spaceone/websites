@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from ConfigParser import ConfigParser
 import os.path
 import ast

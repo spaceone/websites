@@ -6,6 +6,8 @@ import base64
 
 from httoop import FOUND, URI, UNAUTHORIZED
 from circuits.http.server.resource import method
+from circuits.http.events import response
+from circuits import handler
 
 from .base import Resource
 
@@ -23,6 +25,40 @@ class Index(Resource):
 			hostname=client.remote.name,
 			secure_connection=client.server.secure
 		)
+
+
+class HTTPError(Resource):
+
+#	default_features = []
+
+	def template_name(self, client):
+		return 'error.tpl'
+
+	def identify(self, client):
+		return
+
+	@method
+	def GET(self, client):
+		return client.response.body.data
+	GET.codec('application/json', 0.9)
+
+	@handler('httperror', priority=2)
+	def _on_httperror(self, event, client, httperror):
+		event.stop()
+
+	@handler('request', priority=2)
+	def _on_request(self, client):
+		client.resource = self
+		self.methods[client.request.method] = client.method = self.GET
+		client.request.headers.append('Accept', '*/*; q=0.1')
+
+	def content_type(self, client):
+		return super(HTTPError, self).content_type(client) or client.method.available_mimetypes[0]
+
+	@handler('request_success')
+	def _on_request_done(self, evt, value):
+		client = evt.args[0]
+		self.fire(response(client), client.server.channel)
 
 
 class Header(Resource):

@@ -5,8 +5,10 @@ from __future__ import absolute_import
 import os
 from ConfigParser import ConfigParser
 
+from circuits import handler
 from circuits.http.server.resource import Domain as _Domain
-from .website import Index, Header, Login, Logout, Favicon
+from circuits.http.events import request
+from .website import Index, Header, Login, Logout, Favicon, HTTPError
 from .robots import Robots
 from .cms import Page, Navigation
 from .color import Color
@@ -41,12 +43,20 @@ class Domain(_Domain):
 		root += CascadeStyleSheet(channel='website-css')
 		root += Images(channel='website-images')
 		root += Navigation(channel='website-navigation')
-#		root += (channel='website-')
+		root += HTTPError(channel='%s.error' % (self.channel,))
 
 	def init(self, *args, **kwargs):
 		engine = create_engine(self.config.get('base', 'sql_uri'))
 		engine.connect()
 		self.session = sessionmaker(bind=engine)()
+
+	@handler('httperror')
+	def _on_httperror(self, event, client, httperror):
+		event.stop()
+		client.response.status = httperror.status
+		client.response.headers.update(httperror.headers)
+		client.response.body = httperror.body
+		self.fire(request(client), '%s.error' % (self.channel,))
 
 
 def main(server, fqdn):

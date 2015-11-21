@@ -29,8 +29,8 @@ class URLSanitizer(StringValidator):
 class Page(Resource, SQLResource):
 	u"""A Page"""
 
-	path = '/pages{url:/.*}'
-#	path = '{start:(/pages)?}{url:/.*}'
+#	path = '/pages{url:/.*}'
+	path = '{start:(/pages)?}{url:/.*}'
 	# TODO: get idproperties from python-routes dispatcher
 	idproperties = ('url',)
 
@@ -111,10 +111,17 @@ class Page(Resource, SQLResource):
 		return columns
 
 	def identify(self, client, path_segments):
-		url = path_segments['url']
-		try:
-			client.obj = super(Page, self).GET(client, url=url)
-		except NOT_FOUND:
+		url_ = path_segments['url']
+		for url in (url_.rstrip('/'), '%s/' % (url_.rstrip('/'),)):
+			try:
+				client.obj = super(Page, self).GET(client, url=url)
+			except NOT_FOUND:
+				pass
+			else:
+				if url_ != url:
+					raise SEE_OTHER(url)
+				break
+		else:
 			return
 		return self
 
@@ -152,7 +159,7 @@ class Page(Resource, SQLResource):
 			client.domain.session.commit()
 		finally:
 			return values
-	GET.codec('application/json')
+	GET.codec('application/json', 0.9)
 
 	@method
 	def PUT(self, client, _, url):
@@ -174,7 +181,7 @@ class Page(Resource, SQLResource):
 			return _('The resource %r has successfully been created.') % url
 		return _('The resource %r has successfully been modified.') % url
 	PUT.conditions(is_user('root'))
-	PUT.codec('application/json')
+	PUT.codec('application/json', 0.9)
 
 	@method
 	def DELETE(self, client, _, url, **params):
@@ -183,7 +190,7 @@ class Page(Resource, SQLResource):
 	DELETE.conditions(is_user('root'))
 
 	OPTIONS = method(SQLResource.OPTIONS)
-	OPTIONS.codec('application/json')
+	OPTIONS.codec('application/json', 0.9)
 
 	@httphandler('cms.install', priority=0.6)
 	def _on_page_install(self, session):
@@ -211,4 +218,4 @@ class Navigation(Resource):
 	def GET(self, client):
 		result = client.domain.session.query(Page.url, Page.title).all() # TODO: permission
 		return dict(navigation=dict((ipage.url, ipage.title) for ipage in result))
-	GET.codec('application/json')
+	GET.codec('application/json', 0.9)

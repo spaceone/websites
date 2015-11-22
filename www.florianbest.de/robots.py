@@ -3,10 +3,11 @@
 import itertools
 import operator
 
-from circuits.http.server.resource import Resource, method
+from circuits.http.server.resource import method
+from .base import _Resource
 
 
-class Robots(Resource):
+class Robots(_Resource):
 	"""This is the robots file for this domain located under /robots.txt
 
 		.. seealso:: http://www.robotstxt.org/norobots-rfc.txt

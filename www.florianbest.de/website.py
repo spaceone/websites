@@ -9,7 +9,7 @@ from circuits.http.server.resource import method
 from circuits.http.events import response
 from circuits import handler
 
-from .base import Resource
+from .base import Resource, _Resource
 
 
 class Index(Resource):
@@ -110,7 +110,7 @@ class Logout(Resource):
 		raise FOUND(str(location), _('Logging out... Please follow the redirection: %s.') % location)
 
 
-class Favicon(Resource):
+class Favicon(_Resource):
 
 	path = '/favicon.ico'
 

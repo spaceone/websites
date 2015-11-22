@@ -4,10 +4,12 @@ from ConfigParser import ConfigParser
 import os.path
 import ast
 
-class HTML(object): pass
+class HTML(object):
+	pass
 
 
 class Meta(HTML):
+
 	def __init__(self, value, content, http_equiv=False):
 		self.var = 'http-equiv' if http_equiv else 'name'
 		self.value = value
@@ -18,31 +20,31 @@ class Meta(HTML):
 
 
 class Link(HTML):
-	def __init__(self, rel, type, href):
+
+	def __init__(self, rel, type, href, **attrs):
 		self.rel = rel
 		self.type = type
 		self.href = href
+		self.attrs = attrs
 
 
 class CSS(Link):
-	def __init__(self, href):
-		super(CSS, self).__init__('stylesheet', 'text/css', href)
+
+	def __init__(self, href, **attrs):
+		super(CSS, self).__init__('stylesheet', 'text/css', href, **attrs)
 
 
 def config():
 	c = ConfigParser()
 	c.read(os.path.join(os.path.dirname(__file__), 'config.cfg'))
 	config = dict((x, ast.literal_eval(y)) for x, y in c.items('website'))
-	config.update(dict(
-		sf=type('', (object,), {'design': 'SF', 'layout': 'space', 'layoutcolor': 'green', 'display': type('', (object,), {'navileft':False, 'shell': False, 'naviright': False, 'details': False})}),
-		user=type('USER', (object,), {'is_logged_in' : False, 'is_guest':True}),
-		_=lambda x:x,
-	))
 	config['meta'] = [Meta(x, ast.literal_eval(y)) for x, y in c.items('website_meta')]
 	config['meta'] += [Meta(x, ast.literal_eval(y), True) for x, y in c.items('website_meta_http')]
 
 	links = dict((x, ast.literal_eval(y.replace('$', '%'))) for x, y in c.items('website_links'))
 	config['links'] = []
+	config['links'] += [Link(**dict((y, z % config) for y, z in x.iteritems())) for x in links.get('links', [])]
 	config['links'] += [CSS(x % config) for x in links['stylesheet']]
 	config['links'] += [Link('icon', links['icon_type'], x % config) for x in links['icon']]
+#	import pdb; pdb.set_trace()
 	return config

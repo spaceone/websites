@@ -132,9 +132,6 @@ class Page(Resource, SQLResource):
 
 	@method
 	def GET(self, client, _, url, **params):
-		if url == '/':
-			raise SEE_OTHER(self.context.config('index'))
-
 		obj = super(Page, self).GET(client, url=url)
 		obj.views += 1 # increment page views for every request
 

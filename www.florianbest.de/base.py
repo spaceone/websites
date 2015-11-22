@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 
 import os
+import sys
 import inspect
 
 from genshi.template import TemplateLoader, TemplateNotFound, TemplateSyntaxError
@@ -15,7 +16,26 @@ from circuits.http.server.resource import Resource
 from .config import config
 
 
-class Resource(Resource):
+class _Resource(Resource):
+
+	def keyword_arguments(self, client):
+		kwargs = super(_Resource, self).keyword_arguments(client)
+		argspec = inspect.getargspec(client.method.method)
+		if '_' in argspec.args:
+			kwargs['_'] = lambda x: x
+		if argspec.keywords:
+			kw = dict(client.request.uri.query)
+			kw.update(kwargs)
+			kwargs = kw
+
+		for name, value in client.path_segments.iteritems():
+			if name in argspec.args:
+				kwargs[name] = value
+
+		return kwargs
+
+
+class Resource(_Resource):
 
 	loaders = dict()
 
@@ -59,22 +79,6 @@ class Resource(Resource):
 		except TemplateSyntaxError:
 			raise
 
-	def keyword_arguments(self, client):
-		kwargs = super(Resource, self).keyword_arguments(client)
-		argspec = inspect.getargspec(client.method.method)
-		if '_' in argspec.args:
-			kwargs['_'] = lambda x: x
-		if argspec.keywords:
-			kw = dict(client.request.uri.query)
-			kw.update(kwargs)
-			kwargs = kw
-
-		for name, value in client.path_segments.iteritems():
-			if name in argspec.args:
-				kwargs[name] = value
-
-		return kwargs
-
 	@property
 	def website_template_path(self):
 		return os.path.join(self.parent.template_path, 'website/')
@@ -84,18 +88,19 @@ class Resource(Resource):
 		return 'website.tpl'
 
 	def website_tplvars(self, client):
+		module = type(self).__module__.split('.', 1)[0]
+		source = sys.modules[type(self).__module__].__file__.split(module, 1)[-1]
+		source = '%s%s' % (module.replace('_', '.'), source)
 		tplvars = dict(
 			content=unicode(client.response.body),
 			user=client.user,
+			_=lambda x: x,
+			source=source,
 		)
 		tplvars.update(config())
 #		for iname, prop in inspect.getmembers(self.__class__, lambda prop: isinstance(prop, websiteproperty)):
 #			tplvars[prop.name] = getattr(self, iname)
 		return tplvars
-
-	@httphandler('request', priority=1.45)
-	def _set_user(self, client):
-		client.user = type('User', (object,), {'username': 'Guest', 'is_logged_in' : False, 'is_guest':True})
 
 	@httphandler('request', priority=0.45)
 	def _wrap_html_content(self, client):

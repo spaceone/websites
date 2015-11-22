@@ -1,27 +1,16 @@
-<html lang="${language}" dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
+<html lang="${language}" dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/" xmlns:xi="http://www.w3.org/2001/XInclude">
 <?python from genshi import HTML ?>
 <head>
 	<title py:content="title" />
-	<base py:if="base" href="${base}" />
+	<base py:if="False and base" href="${base}" />
 
 	<py:for each="imeta in meta">
 	<meta py:attrs="{imeta.var: imeta.value}" content="${imeta.content}" />
 	</py:for>
 
-	<!---<py:comment>
-	<link rel="alternate stylesheet" href="/css/${sf.design}/print.css" title="PrintView" type="text/css"/>
-	<link rel="stylesheet" href="/css/${sf.design}/print.css" type="text/css" media="print"/>
-	</py:comment>-->
-
 	<py:for each="link in links">
-	<link rel="${link.rel}" type="${link.type}" href="${link.href}" />
+	<link rel="${link.rel}" type="${link.type}" href="${link.href}" py:attrs="link.attrs"/>
 	</py:for>
-
-	<!--<py:comment>-->
-<!--	[if lt IE 8]>
-		<link rel="stylesheet" type="text/css" href="/css/${sf.design}/ie.css" />
-	${HTML(u'%s' % (chr(60),))}![endif]-->
-	<!--</py:comment>-->
 
 	<style py:if="inline_stylesheet">
 	<![CDATA[
@@ -30,172 +19,37 @@
 	</style>
 </head>
 <body>
-	<!-- @start margin -->
 	<div id="margin">
-		<!-- @start profile -->
-		<div id="profile" py:if="False">
-			<p py:if="user.is_logged_in" class="fl">
-				Hi ${user.ProfileLink};
-				unseen:
-				<a href="/pm">MSG's: <!-- {GWF_Notice::getUnreadPM($$user)}--></a>,
-				<a href="/news">News: <!-- {GWF_Notice::getUnreadNews($$user)}--></a>,
-				<a href="/forum">Forum: <!-- {GWF_Notice::getUnreadForum($$user, true)}--></a>,
-				<a href="/links">Links<!-- {GWF_Notice::getUnreadLinks($$user)}--></a>
-				<a href="/chall">Challenges: <!-- {GWF_Notice::getUnreadChallenges($$user)}--></a>
-				<a href="/pagebuilder/news">Articles: <!-- {GWF_Notice::getUnreadPageBuilder($$user)}--></a>
-				<a href="/comments/news">Comments: <!-- {GWF_Notice::getUnreadComments($$user)}--></a>
-				<p class="fr">Last Login: <span class="color">{GWF_Time::displayTimestamp($$user->getVar('user_lastlogin'))}</span></p>
-			</p>
-			<!--{if ! $$user->isLoggedIn()}
-			{GWF_Module::loadModuleDB('Login', true, true)->getMethod('Form')->setTemplate('shortlogin.tpl')->execute()}
-			{/if}-->
+		<xi:include href="../profile.tpl" />
+		<xi:include href="../logo.tpl" />
+		<xi:include href="../headnavi.tpl" />
 
-			<p py:if="False" class="fr" style="width: auto;">
-				<a href="$${SF->getIndex('print')}print"><img src="/images/SF/printer.png" alt="Druckansicht" title="Druckansicht"/></a>
-				<a href="$${SF->getIndex('plain')}plain"><img src="/images/SF/paper.png" alt="HTML-Quelltext" title="Quelltext anzeigen"/></a>
-				<a href="de/"><img src="/images/${iconset}/country/Germany.png" alt="[DE]" title="${_('change_language')}"/></a>
-				<a href="en/"><img src="/images/${iconset}/country/UnitedStates.png" alt="[EN]" title="${_('change_language')}"/></a>
-			</p>
-		</div>
-		<!-- @end profile -->
-		<!-- @start logo -->
-		<div id="logo">
-			<span>
-				 - the perfection of WebApplication -
-			</span>
-		</div>
-		<!-- @end logo -->
-		<!-- @start headnavi -->
-		<div id="headnavi">
-			<ol class="navi">
-			<py:if test="user.is_logged_in">
-				<li class="sec">
-					<h2><a href="$${user->getProfileHREF()}">[$${user->display('user_name')}]</a></h2>
-					<ul>
-						<li class="cat"><h2>Settings:</h2></li>
-						<li class="cat"><h2><a href="/account">Account</a></h2></li>
-						<li class="cat"><h2><a href="/profile_settings">Profile</a></h2></li>
-						<li class="cat"><h2><a href="/forum/options">Forum</a></h2></li>
-						<li class="cat"><h2><a href="/pm/options">PM</a></h2></li>
-					</ul>
-				</li>
-				<li py:if="user.is_admin" class="sec">
-					<h2><a href="/nanny">[Admin]</a></h2>
-					<ul>
-						<li class="cat"><h2><a href="/nanny">Admin</a></h2></li>
-						<li class="cat"><h2><a href="/Admin/Users">Benutzer</a></h2></li>
-						<li class="cat"><h2><a href="/Admin/Groups">Gruppen</a></h2></li>
-						<li class="cat"><h2><a href="/Admin/LoginAs?username=">Einloggen als</a></h2></li>
-						<li class="cat"><h2><a href="/PageBuilder/Admin">CMS</a></h2></li>
-					</ul>
-				</li>
-				<li class="sec">
-					<h2><a href="/nanny">[Modules]</a></h2>
-					<ul>
-						<li class="cat"><h2><a href="/links">Links<!-- {GWF_Notice::getUnreadLinks($$user)}--></a></h2></li>
-						<li class="cat"><h2><a href="/Links/Add?tag=">Link hinzufügen</a></h2></li>
-						<li class="cat"><h2><a href="/forum">Forum<!-- {GWF_Notice::getUnreadForum($$user)}--></a></h2></li>
-						<li class="cat"><h2><a href="/Forum/Unread">ungelesene</a></h2></li>
-						<li class="cat"><h2><a href="/pm">PM<!-- {GWF_Notice::getUnreadPM($$user)}--></a></h2></li>
-						<li class="cat"><h2><a href="/news">News<!-- {GWF_Notice::getUnreadNews($$user)}--></a></h2></li>
-					</ul>
-				</li>
-				<li class="sec"><h2><a href="/logout">Logout</a></h2></li>
-			</py:if>
-			<py:if test="user.is_guest">
-				<!--<li class="sec"><h2><a href="/news">News {GWF_Notice::getUnreadNews($$user)}</a></h2></li>
-				<li class="sec"><h2><a href="/links">Links</a></h2></li>
-				<li class="sec"><h2><a href="/forum">Forum</a></h2></li>
-				<li class="sec"><h2><a href="/register">Register</a></h2></li>-->
-				<li class="sec"><h2><a href="/">Home</a></h2></li>
-				<li class="sec"><h2><a href="/header">HTTP-Header</a></h2></li>
-				<li class="sec"><h2><a href="http://graffiti.florianbest.de/">Graffiti</a></h2></li>
-				<li class="sec"><h2><a href="/login">Login</a></h2></li>
-			</py:if>
-
-			</ol>
-<!--GWF_Navigation::getPageMenu()|indent:3:"\t"-->
-<!--GWF_Module::loadModuleDB('Navigation')->execute()->getPageMenu()|indent:3:"\t"-->
-		</div>
-		<!-- @end headnavi -->
-		<!-- @start body -->
 		<div id="body">
-			<!--@start left -->
-			<div py:if="sf.display.navileft" id="left" class="navigation">
-{include file="tpl/$${design}/navi.tpl" assign='navi_left' side='navileft' navigation="{SF_Navigation::display_navigation(SF_Navigation::SIDE_LEFT)}"}
-$${navi_left|indent:4:"\t"}
-			</div>
-			<div py:if="False and not sf.display.navileft" id="left">
-				<a href="$${SF->getIndex('navileft')}navileft=shown"><img style="margin: 10px 0; height: 10px;" src="/images/${iconset}/add.png" alt="[+]" title="Show Navigation"/></a>
-			</div>
-			<!-- @end left -->
-			<!-- @start middle -->
-			<div id="middle" style="margin: 0 20px; background-color: #1C1C1C;">
-				<!-- @start shell -->
-				<div py:if="sf.display.shell" id="smallshell" class="shell">
-					<span class="fr">
-						<a href="$${SF->getIndex('shell')}shell=hidden"><img style="margin: 10px 0; height: 10px;" src="/images/${iconset}/sub.png" alt="[-]" title="Hide Shell"/></a>
-					</span><br/>
-					<!--{assign var="month" val="$$SF->langA('monthnames', date('n'))"}
-					{array( $$SF->langA('daynames', date('w')), date('w'), $$month, date('n'), date('Y')))}|-->
-					<pre class="logo" id="shell_logo">
-    					.--.      _____________________________________________________________
-   					   |o_o |    /    WELCOME TO       $${_(SF::greeting())}                            \
-   					   |:_/ | --&lt;|       WWW.FLORIAN     $${_('today_is_the', array( $$SF->langA('daynames', date('w')), date('w'), $$SF->langA('monthnames', date('n')), date('n'), date('Y')))}|
-  					  //   \ \   \           BEST.DE !!!  Es ist {date('G:i:s')} Uhr                   /
- 					 (|     | )   --------------------------------------------------------------
-					/'\_   _/`\ type in ´help´ for
-					\___)=(___/  a list of commands!
-					</pre>
-					$${logo}
-					<form method="GET" action="index.php">
-						<p class="shell">
-							<span class="bold shell_{if $$user->isAdmin()}admin{else}user{/if}">$${user->displayUsername()}@$${smarty.server.SERVER_NAME}</span>
-							<span class="bold shell_dir">$${smarty.server.REQUEST_URI|escape}{if $$user->isAdmin()} # {else} $$ {/if}</span>
-							<input type="text" size="8" value="cmd" name="cmd" class="shell border"/>
-							<input type="hidden" name="mo" value="SF"/>
-							<input type="hidden" name="me" value="Shell"/>
-							<input type="submit" value=" " name="submit" class="shell"/>
-							<br/><br/>
-						</p>
-					</form>
-				</div>
-				<!-- @end shell -->
-				<span py:if="False and not sf.display.shell" class="fr">
-					<a href="$${SF->getIndex('shell')}shell=shown"><img style="margin: 10px 0; height: 10px;" src="/images/${iconset}/add.png" alt="[+]" title="Show Shell"/></a>
-				</span>
-				<!-- @start content -->
-				<div id="content" class="inhalt {if $$SF->getMoMe('SF_Shell')}shell{/if}">
-				<!-- @begin errormessages -->
-<!-- ${errors}-->
-				<!-- @end errormessages -->
+			<py:with py:if="navigation" vars="side='left'">
+				<xi:include href="../navi.tpl" />
+			</py:with>
+			<div id="middle" style="/*margin: 0 20px; background-color: #1C1C1C;*/">
+				<xi:include href="../shell.tpl" />
+				<div id="content" class="inhalt">
+					<xi:include py:if="False" href="../errors.tpl" />
 					${HTML(content)}
 				</div>
-				<!-- @end content -->
 				<hr/>
-				<!--<p class="bottom">
-					<a class="backbutton" href="{GWF_Session::getLastURL()|escape}" title="{GWF_Session::getLastURL()|escape}">${_('back')} ({GWF_Session::getLastURL()|escape})</a>
-				</p>-->
+				<p class="bottom">
+					<a class="backbutton" href="#" onclick="window.history.back();" title="">${_('back')}</a>
+				</p>
 			</div>
-			<!-- @end middle -->
-			<!-- @start right -->
-			<div py:if="sf.display.naviright" id="right" class="navigation">
-{include file="tpl/$${design}/navi.tpl" assign='navi_right' side='naviright' navigation="{SF_Navigation::display_navigation(SF_Navigation::SIDE_LEFT)}"}
-$${navi_right|indent:4:"\t"}
-			</div>
-			<div py:if="False and not sf.display.naviright" id="right">
-				<a href="$${SF->getIndex('naviright')}naviright=shown"><img style="margin: 10px 0; height: 10px;" src="/images/${iconset}/add.png" alt="[+]" title="Show Navigation"/></a>
-			</div>
-		<!-- @end right -->
+			<py:with py:if="naviright" vars="side='naviright'">
+				<xi:include href="../navi.tpl" />
+			</py:with>
 		</div>
-		<!-- @end body -->
 		<!-- @start copyright -->
 		<div py:if="False" id="copyright">
 			<p class="copyright">
 				SPACE-Framework is copyright by
 				<a href="/profile/space" title="space's profile">Florian Best</a>
 			</p>
-			<py:if test="sf.display.details">
+			<py:if test="details">
 			<!-- @start shortdetails -->
 			<p class="copyright fl" style="text-align: left; width: 50%;">
 				$${user->displayProfileLink()}
@@ -215,13 +69,13 @@ $${navi_right|indent:4:"\t"}
 				</a>
 			</p>
 			</py:if>
-			<p py:if="False and not sf.display.details" class="copyright fr">
+			<p py:if="False and not details" class="copyright fr">
 				<a href="$${SF->getIndex('details')}details=hidden"><img style="margin: 10px 0; height: 10px;" src="/images/${iconset}/sub.png" alt="[+]" title="Hide Details"/></a>
 			</p>
 		</div>
 		<!-- @end copyright -->
 		<!-- @start details -->
-		<div py:if="sf.display.details" id="details">
+		<div py:if="details" id="details">
 			<table>
 				<tr>
 					<th>$${_('visitor')|upper}</th>
@@ -264,14 +118,15 @@ $${navi_right|indent:4:"\t"}
 			<!--<hr style="margin: 0 auto;"/>-->
 			<a href="/contact/">${_('contact')}</a>
 			<a href="/impress/">${_('impress')}</a>
-			<a href="/disclaimer/">${_('disclaimer')}</a>
+<!--			<a href="/disclaimer/">${_('disclaimer')}</a>
 			<a href="/sitemap/">${_('sitemap')}</a>
 			<a href="/roadmap/">${_('roadmap')}</a>
 			<a href="/changelog/">${_('changelog')}</a>
 			<a href="/credits/">${_('credits')}</a>
 			<a href="/helpdesk/">${_('helpdesk')}</a>
 			<a href="/todo/">${_('todo')}</a>
-			<a href="/project/">${_('project')}</a>
+			<a href="/project/">${_('project')}</a>-->
+			<a href="https://github.com/spaceone/websites/blob/private/${source}" rel="nofollow noreferrer" target="_blank">view page source</a>
 			<a href="#" class="last">${_('bookmark')}</a>
 		</div>
 		<!-- @end footer -->

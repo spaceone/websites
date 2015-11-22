@@ -58,6 +58,10 @@ class Domain(_Domain):
 		client.response.body = httperror.body
 		self.fire(request(client), '%s.error' % (self.channel,))
 
+	@handler('routing', priority=1.45)
+	def _set_user(self, client):
+		client.user = type('User', (object,), {'username': 'Guest', 'is_logged_in' : False, 'is_guest':True})
+
 
 def main(server, fqdn):
 	server.domains += Domain(fqdn)

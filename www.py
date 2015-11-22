@@ -6,11 +6,14 @@ import importlib
 from pprint import pprint
 from ConfigParser import ConfigParser, NoSectionError
 
+from httoop import ServerHeader
 from circuits import handler
 from circuits.http.server.__main__ import HTTPServer
 
 
 class Server(HTTPServer):
+
+	logformat = '%(h)s %(l)s %(u)s %(t)s %(s)s "%(r)s" %(b)s "%(f)s" "%(a)s"'
 
 	def add_arguments(self):
 		add = self.parser.add_argument
@@ -51,4 +54,5 @@ class Server(HTTPServer):
 
 
 if __name__ == '__main__':
+	ServerHeader.value = 'circuits.http/1.0 %s' % (ServerHeader,)
 	Server.main()

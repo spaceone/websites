@@ -18,6 +18,33 @@ from .config import config
 
 class _Resource(Resource):
 
+	def frame_options(self, client):
+		return 'DENY'
+
+	def xss_protection(self, client):
+		return '1; mode=block'
+
+	def content_type_options(self, client):
+		return 'nosniff'
+
+	def strict_transport_security(self, client):
+		return 'max-age=16070400; includeSubDomains'
+
+	def content_security_policy(self, client):
+		return "default-src 'self'; script-src 'self' 'unsafe-inline'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'none'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /csp-violation;"
+
+	def permitted_cross_domain_policies(self, client):
+		return 'master-only'
+
+	def cache_control(self, client):
+		return 'no-cache, no-store, must-revalidate'
+
+	def pragma(self, client):
+		return 'no-cache'
+
+	def expires(self, client):
+		return '-1'
+
 	def keyword_arguments(self, client):
 		kwargs = super(_Resource, self).keyword_arguments(client)
 		argspec = inspect.getargspec(client.method.method)
@@ -47,7 +74,7 @@ class Resource(_Resource):
 
 	def register_methods(self):
 		super(Resource, self).register_methods()
-		self.methods['GET'].codec('text/html')(self.__class__._genshi_codec)
+		self.methods['GET'].codec('text/html', charset='UTF-8')(self.__class__._genshi_codec)
 
 	def _genshi_codec(self, client):
 		content = self.template_vars(client)
@@ -66,7 +93,8 @@ class Resource(_Resource):
 		return os.path.join(client.domain.template_path, '%s/' % (client.resource.__module__.split('.')[-1],))
 
 	def template_name(self, client):
-		return ('%s_%s.tpl' % (client.resource.__class__.__name__, client.request.method)).lower()
+		method = {u'HEAD': u'GET'}.get(client.request.method, client.request.method)
+		return ('%s_%s.tpl' % (client.resource.__class__.__name__, method)).lower()
 
 	def render_template(self, template_path, template_name, tplvars):
 		try:

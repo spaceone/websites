@@ -6,6 +6,7 @@ import base64
 
 from httoop import FOUND, URI, UNAUTHORIZED
 from circuits.http.server.resource import method
+from circuits.http.server.content import ContentType, Security
 from circuits.http.events import response
 from circuits import handler
 
@@ -29,7 +30,7 @@ class Index(Resource):
 
 class HTTPError(Resource):
 
-#	default_features = []
+	default_features = [ContentType, Security]
 
 	def template_name(self, client):
 		return 'error.tpl'
@@ -68,11 +69,11 @@ class Header(Resource):
 	@method
 	def GET(self, client):
 		headers = dict(client.request.headers.items())
-		for authorization in ('Authorization', 'Proxy-Authorization'):
+		for authorization in ('Cookie', 'Authorization', 'Proxy-Authorization'):
 			if authorization in headers:
 				headers[authorization] = '***'
 
-		return dict(headers=headers.items(), params=dict(client.request.uri.query).items())
+		return dict(headers=sorted(headers.items()), params=dict(client.request.uri.query).items())
 
 
 # TODO: JSLoginForm
@@ -135,3 +136,16 @@ class Favicon(_Resource):
 	@GET.codec('image/x-icon')
 	def _image_icon(self, client):
 		return client.data
+
+
+class CSPViolation(_Resource):
+
+	path = '/csp-violation'
+
+	@method
+	def GET(self, client):
+		client.response.status = 204
+
+	@method
+	def POST(self, client):
+		print client.request.body

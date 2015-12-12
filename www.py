@@ -13,7 +13,7 @@ from circuits.http.server.__main__ import HTTPServer
 
 class Server(HTTPServer):
 
-	logformat = '%(h)s %(l)s %(u)s %(t)s %(s)s "%(r)s" %(b)s "%(f)s" "%(a)s"'
+	logformat = '%(h)s %(l)s %(u)s %(t)s %(s)s "%(r)s" "%(H)s" %(b)s "%(f)s" "%(a)s"'
 
 	def add_arguments(self):
 		add = self.parser.add_argument
@@ -49,7 +49,7 @@ class Server(HTTPServer):
 		response = client.response
 
 		if response.status > 399:
-			print((int(response.status), unicode(request.method), tuple(request.protocol), unicode(request.uri.uri)))
+			print((int(response.status), unicode(request.method), tuple(request.protocol), unicode(request.uri)))
 			pprint(dict(request.headers))
 
 

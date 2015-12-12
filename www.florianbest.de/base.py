@@ -74,7 +74,8 @@ class Resource(_Resource):
 
 	def register_methods(self):
 		super(Resource, self).register_methods()
-		self.methods['GET'].codec('text/html', charset='UTF-8')(self.__class__._genshi_codec)
+		for method in self.methods:
+			self.methods[method].codec('text/html', charset='UTF-8')(self.__class__._genshi_codec)
 
 	def _genshi_codec(self, client):
 		content = self.template_vars(client)

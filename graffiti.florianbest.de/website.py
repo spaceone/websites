@@ -280,7 +280,7 @@ class Robots(Resource):
 
 	@method
 	def GET(self, client):
-		return 'User-Agent: *\nAllow: /'
+		return 'User-agent: *\nDisallow: /contact/'
 	GET.codec('text/plain')
 
 #class InAktion(Resource): pass

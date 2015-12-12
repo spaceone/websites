@@ -3,8 +3,12 @@
 from __future__ import absolute_import
 
 import base64
+import datetime
+import smtplib
+from email.mime.text import MIMEText
 
 from httoop import FOUND, URI, UNAUTHORIZED
+from httoop.status import UNPROCESSABLE_ENTITY
 from circuits.http.server.resource import method
 from circuits.http.server.content import ContentType, Security
 from circuits.http.events import response
@@ -51,7 +55,7 @@ class HTTPError(Resource):
 	def _on_request(self, client):
 		client.resource = self
 		self.methods[client.request.method] = client.method = self.GET
-		client.request.headers.append('Accept', '*/*; q=0.1')
+#		client.request.headers.append('Accept', '*/*; q=0.1')
 
 	def content_type(self, client):
 		return super(HTTPError, self).content_type(client) or client.method.available_mimetypes[0]
@@ -73,7 +77,66 @@ class Header(Resource):
 			if authorization in headers:
 				headers[authorization] = '***'
 
-		return dict(headers=sorted(headers.items()), params=dict(client.request.uri.query).items())
+		return dict(
+			headers=sorted(headers.items()),
+			params=dict(client.request.uri.query).items()
+		)
+
+
+class Contact(Resource):
+
+	path = '/contact/'
+
+	@method
+	def GET(self, client):
+		return {}
+
+	@method
+	def POST(self, client):
+		default_sender = unicode(client.domain.config.get('contact', 'sender_address'))
+		receiver = unicode(client.domain.config.get('contact', 'receive_address'))
+		escape = lambda s: repr(s).lstrip('u')[1:-1]
+		data = dict(client.request.body.data)
+		subject = escape(data.get('subject', u''))
+		sender = escape(data.get('from', default_sender))
+		if u'@' not in sender:
+			sender = default_sender
+		if data.get('name') and '<' not in data['name'] and '>' not in data['name']:
+			sender = u'%s <%s>' % (escape(data['name']), sender)
+			sender = sender.replace(u',', '')
+
+		text = u'''Contact form:
+%s %s <%s> wrote a message via the contact form.
+Website: %s
+Copy: %s
+Subject: %s
+HTTP-Request: %s
+IP-Address: %s
+Hostname: %s
+Date: %s
+Message: %s
+		'''
+		try:
+			text = text % (
+				data['title'], data['name'], data['from'], data['website'], data['copy'],
+				data['subject'], repr(dict(client.request.headers)), client.remote.ip,
+				client.remote.name, datetime.datetime.now().isoformat(), data['message']
+			)
+		except KeyError as exc:
+			raise UNPROCESSABLE_ENTITY('Missing field: %r' % (str(exc),))
+
+		message = MIMEText(text.encode('utf-8'))
+		message['From'] = sender
+		message['To'] = receiver
+		message['Subject'] = subject
+		message['Content-Type'] = 'text/plain; charset=UTF-8'
+		if data['copy'] == 'on':
+			message['CC'] = sender
+
+		connection = smtplib.SMTP('localhost')
+		connection.sendmail(sender, [receiver], message.as_string())
+		connection.quit()
+	POST.accept('application/x-www-form-urlencoded')
 
 
 # TODO: JSLoginForm

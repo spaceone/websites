@@ -8,7 +8,7 @@ from ConfigParser import ConfigParser
 from circuits import handler
 from circuits.http.server.resource import Domain as _Domain
 from circuits.http.events import request
-from .website import Index, Header, Login, Logout, Favicon, HTTPError, CSPViolation
+from .website import Index, Header, Login, Logout, Contact, Favicon, HTTPError, CSPViolation
 from .robots import Robots
 from .cms import Page, Navigation
 from .color import Color
@@ -42,6 +42,7 @@ class Domain(_Domain):
 		root += JavaScript(channel='website-javascript')
 		root += CascadeStyleSheet(channel='website-css')
 		root += Images(channel='website-images')
+		root += Contact(channel='website-contact')
 		root += Navigation(channel='website-navigation')
 		root += CSPViolation(channel='csp-violation')
 		root += HTTPError(channel='%s.error' % (self.channel,))

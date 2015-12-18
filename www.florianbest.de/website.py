@@ -81,6 +81,7 @@ class Header(Resource):
 			headers=sorted(headers.items()),
 			params=dict(client.request.uri.query).items()
 		)
+	GET.codec('application/json', 0.9)
 
 
 class Contact(Resource):

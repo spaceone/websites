@@ -5,9 +5,10 @@ from __future__ import absolute_import
 import os
 import sys
 import inspect
+from gettext import NullTranslations
 
 from genshi.template import TemplateLoader, TemplateNotFound, TemplateSyntaxError
-#from genshi.filters import Translator
+from genshi.filters import Translator
 
 from httoop import INTERNAL_SERVER_ERROR
 from circuits.http.utils import httphandler
@@ -45,11 +46,13 @@ class _Resource(Resource):
 	def expires(self, client):
 		return '-1'
 
+	gettext = NullTranslations()
+
 	def keyword_arguments(self, client):
 		kwargs = super(_Resource, self).keyword_arguments(client)
 		argspec = inspect.getargspec(client.method.method)
 		if '_' in argspec.args:
-			kwargs['_'] = lambda x: x
+			kwargs['_'] = lambda x: self.gettext.ugettext(x)
 		if argspec.keywords:
 			kw = dict(client.request.uri.query)
 			kw.update(kwargs)
@@ -66,11 +69,10 @@ class Resource(_Resource):
 
 	loaders = dict()
 
-	@classmethod
-	def load(cls, path):
-		if not path in cls.loaders:
-			cls.loaders[path] = TemplateLoader(path, auto_reload=True)
-		return cls.loaders[path]
+	def load(self, path):
+		if not path in self.loaders:
+			self.loaders[path] = TemplateLoader(path, auto_reload=True, callback=self.init_template)
+		return self.loaders[path]
 
 	def register_methods(self):
 		super(Resource, self).register_methods()
@@ -97,11 +99,13 @@ class Resource(_Resource):
 		method = {u'HEAD': u'GET'}.get(client.request.method, client.request.method)
 		return ('%s_%s.tpl' % (client.resource.__class__.__name__, method)).lower()
 
+	def init_template(self, template):
+		translator = Translator(translate=self.gettext)
+		translator.setup(template)
+
 	def render_template(self, template_path, template_name, tplvars):
 		try:
 			tpl = self.load(template_path).load(template_name)
-		#	translator = Translator(translate=client.kwargs['_'])
-		#	translator.setup(tpl)
 			return tpl.generate(**tplvars).render(doctype='html5')
 		except TemplateNotFound:
 			raise INTERNAL_SERVER_ERROR('The template %r was not found in %r' % (template_name, template_path))

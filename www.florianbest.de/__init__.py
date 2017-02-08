@@ -14,6 +14,7 @@ from .cms import Page, Navigation
 from .color import Color
 from .static import JavaScript, CascadeStyleSheet, Images
 from .db import create_engine, sessionmaker
+from .saml import SAML
 
 
 class Domain(_Domain):
@@ -32,6 +33,7 @@ class Domain(_Domain):
 		root = Index(channel='website-index')
 		self += root
 		root = self
+		root += SAML(channel='website-saml')
 		root += Header(channel='website-header')
 		root += Login(channel='website-login')
 		root += Logout(channel='website-logout')

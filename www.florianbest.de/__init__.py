@@ -62,7 +62,7 @@ class Domain(_Domain):
 
 	@handler('routing', priority=1.45)
 	def _set_user(self, client):
-		client.user = type('User', (object,), {'username': 'Guest', 'is_logged_in' : False, 'is_guest':True})
+		client.user = type('User', (object,), {'username': 'Guest', 'is_logged_in': False, 'is_guest': True})
 
 
 def main(server, fqdn):

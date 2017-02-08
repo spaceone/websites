@@ -70,7 +70,7 @@ class Resource(_Resource):
 	loaders = dict()
 
 	def load(self, path):
-		if not path in self.loaders:
+		if path not in self.loaders:
 			self.loaders[path] = TemplateLoader(path, auto_reload=True, callback=self.init_template)
 		return self.loaders[path]
 

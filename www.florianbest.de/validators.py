@@ -293,4 +293,3 @@ class ListSanitizer(Sanitizer):
 			raise multi_error
 		return altered_value
 '''
-

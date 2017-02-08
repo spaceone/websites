@@ -8,6 +8,7 @@ from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
+from httoop import NOT_FOUND, CREATED, GONE
 Base = declarative_base()
 
 
@@ -21,13 +22,12 @@ def metabase(cls=None):
 	return declarative_base(cls=cls, metaclass=abc.ABCMeta)
 
 
-from httoop import NOT_FOUND, CREATED, GONE
 @base
 class SQLResource(object):
 	u"""
 
 	"""
-	idproperties = () # TODO: get from uri_dispatcher
+	idproperties = ()  # TODO: get from uri_dispatcher
 	__abstract__ = True
 
 	@declared_attr
@@ -69,7 +69,7 @@ class SQLResource(object):
 
 	@property
 	def schema(self):
-		schema = dict()#Schema()
+		schema = dict()  #Schema()
 		for name, column in dict(self.columns).items():
 			schema[name] = dict(
 				column=column,
@@ -106,7 +106,7 @@ class SQLResource(object):
 			obj = query.one()
 		except NoResultFound:
 			exists = False
-			obj = self.__class__(**client.request.body.data) # FIXME
+			obj = self.__class__(**client.request.body.data)  # FIXME
 			session.add(obj)
 		else:
 			exists = True
@@ -124,7 +124,7 @@ class SQLResource(object):
 	def DELETE(self, client, **params):
 		session = client.domain.session
 		obj = SQLResource.GET(self, client, **params)
-		if obj is None: # obj.DELETED
+		if obj is None:  # obj.DELETED
 			# TODO: is there a possibility to detect if the resource had exists?
 			raise GONE()
 		session.delete(obj)

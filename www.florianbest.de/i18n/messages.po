@@ -1,0 +1,50 @@
+# translation for my website
+# Copyright (C) 2017 Florian Best
+# This file is distributed under the same license as the websites package.
+# Florian Best <i18n@florianbest.de>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: www.florianbest.de\n"
+"Report-Msgid-Bugs-To: i18n@florianbest.de\n"
+"POT-Creation-Date: 2017-02-18 09:02+0100\n"
+"PO-Revision-Date: 2017-02-18 07:18+0100\n"
+"Last-Translator: Florian Best <i18n@florianbest.de>\n"
+"Language-Team: DE <i18n@florianbest.de>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: website.py:27
+msgid "Hello World!"
+msgstr "Hallo Welt!"
+
+#: website.py:183
+#, python-format
+msgid "Logging out... Please follow the redirection: %s."
+msgstr "Ausloggen... Bitte folgen Sie der Weiterleitung: %s."
+
+#: cms.py:178
+#, python-format
+msgid "The resource %r has successfully been created."
+msgstr "Die Ressource %r wurde erfolgreich erstellt."
+
+#: cms.py:179
+#, python-format
+msgid "The resource %r has successfully been modified."
+msgstr "Die Ressource %r wurde erfolgreich modifiziert."
+
+#: cms.py:186
+#, python-format
+msgid "The resource %r has successfully been removed."
+msgstr "Die Ressource %r wurde erfolgreich gelöscht."
+
+#: website.py:165
+#, python-format
+msgid "Welcome %s, you are logged in."
+msgstr "Willkommen %s, du bist eingeloggt."
+
+#: website.py:179
+msgid "You are already logged out ;)"
+msgstr "Sie sind bereits ausgeloggt ;)"

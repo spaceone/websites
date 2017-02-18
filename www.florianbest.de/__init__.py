@@ -29,6 +29,8 @@ class Domain(_Domain):
 
 		super(Domain, self).__init__(*args, **kwargs)
 		self.aliases.add(self.fqdn.replace('www.', ''))
+		self.localedir = self.config.get('i18n', 'localedir')
+		self.textdomain = self.config.get('i18n', 'textdomain')
 
 		root = Index(channel='website-index')
 		self += root

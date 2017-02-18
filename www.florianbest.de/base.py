@@ -5,19 +5,22 @@ from __future__ import absolute_import
 import os
 import sys
 import inspect
-from gettext import NullTranslations
 
 from genshi.template import TemplateLoader, TemplateNotFound, TemplateSyntaxError
 from genshi.filters import Translator
 
 from httoop import INTERNAL_SERVER_ERROR
 from circuits.http.utils import httphandler
-from circuits.http.server.resource import Resource
+from circuits.http.server.resource import Resource as BaseResource
+from circuits.http.server.i18n.gettext import GettextResource
+from circuits.http.server.i18n.content_language import ContentLanguage
 
 from .config import config
 
 
-class _Resource(Resource):
+class _Resource(GettextResource, BaseResource):
+
+	default_features = BaseResource.default_features + [ContentLanguage]
 
 	def frame_options(self, client):
 		return 'DENY'
@@ -46,13 +49,14 @@ class _Resource(Resource):
 	def expires(self, client):
 		return '-1'
 
-	gettext = NullTranslations()
+	def textdomain(self, client):
+		return client.domain.textdomain
 
 	def keyword_arguments(self, client):
 		kwargs = super(_Resource, self).keyword_arguments(client)
 		argspec = inspect.getargspec(client.method.method)
 		if '_' in argspec.args:
-			kwargs['_'] = lambda x: self.gettext.ugettext(x)
+			kwargs['_'] = client.translation.ugettext
 		if argspec.keywords:
 			kw = dict(client.request.uri.query)
 			kw.update(kwargs)
@@ -100,6 +104,7 @@ class Resource(_Resource):
 		return ('%s_%s.tpl' % (client.resource.__class__.__name__, method)).lower()
 
 	def init_template(self, template):
+		return
 		translator = Translator(translate=self.gettext)
 		translator.setup(template)
 

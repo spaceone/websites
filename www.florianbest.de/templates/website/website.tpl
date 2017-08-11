@@ -126,7 +126,7 @@
 			<a href="/helpdesk/">${_('helpdesk')}</a>
 			<a href="/todo/">${_('todo')}</a>
 			<a href="/project/">${_('project')}</a>-->
-			<a href="https://github.com/spaceone/websites/blob/private/${source}" rel="nofollow noreferrer" target="_blank">view page source</a>
+			<a href="https://github.com/spaceone/websites/blob/private/${source}" rel="noopener nofollow noreferrer" target="_blank">view page source</a>
 			<a href="#" class="last">${_('bookmark')}</a>
 		</div>
 		<!-- @end footer -->

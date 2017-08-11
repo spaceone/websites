@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import os
 import importlib
 from pprint import pprint
 from ConfigParser import ConfigParser, NoSectionError
@@ -18,7 +16,8 @@ class Server(HTTPServer):
 	def add_arguments(self):
 		add = self.parser.add_argument
 
-		add('-c', '--config', metavar='configuration file',
+		add(
+			'-c', '--config', metavar='configuration file',
 			help='Specifies an alternative per-user configuration file.')
 
 		super(Server, self).add_arguments()

@@ -82,23 +82,28 @@ class Kunstwerke(Resource):
 	path = '/artworks/'
 	meta_description = 'Graffiti Auftragsarbeiten / Kunstwerke von Florian Best'
 
-	images = {
-		'2011_Space_DB_final1': dict(title='Space - Juli 2011 - in der Eingangshalle vom Bahnhof Barnstorf'),
-		'2011_Space_DB_final2': dict(title=''),
-		'2010_Space_DB_final': dict(
+	images = (
+		('2018_Space_Workshop1_final1', dict(title='')),
+		('2018_Space_Workshop1_final2', dict(title='Space - Juli 2018 -  Abschlusswerk Graffiti Workshop in Barnstorf')),
+		('2018_Space_Workshop2_final1', dict(title='Space - Juli 2018 -  Abschlusswerk Graffiti Workshop in Barnstorf')),
+		('2011_Space_DB_final1', dict(title='Space - Juli 2011 - in der Eingangshalle vom Bahnhof Barnstorf')),
+		('2011_Space_DB_final2', dict(title='')),
+		('2010_Space_DB_final', dict(
 			content='Space - Juni 2010 - Deutsche Bahn Brücke in Barnstorf <br> Abschlusswerk meines Graffiti Workshops',
 			title='Deutsche Bahn Brücke'
-		),
-		'2010_Space_DB_final2': dict(title=''),
-		'2010_Space_DB_43': dict(title=''),
-		'2010_Space_JZB_final2': dict(title='Space - 2010 - Jugendzentrum Barnstorf<br><br>'),
-		'2010_JZB_final': dict(title='JZB - 2010 - Eingang des Jugendzentrum Barnstorf'),
-		'2010_JZB_6': dict(title='')
-	}
+		)),
+		('2010_Space_DB_final2', dict(title='')),
+		('2010_Space_DB_43', dict(title='')),
+		('2010_Space_JZB_final2', dict(title='Space - 2010 - Jugendzentrum Barnstorf<br><br>')),
+		('2010_JZB_final', dict(title='JZB - 2010 - Eingang des Jugendzentrum Barnstorf')),
+		('2010_JZB_6', dict(title='')),
+		('2018_Tux', dict(title='Linux Tux')),
+		('2018_CafeFreiraumLeinwand', dict(title='Leinwand für das Cafe Freiraum Projekt in Diepholz')),
+	)
 
 	@method
 	def GET(self, client):
-		return [dict(url=url, title=image['title'], content=image.get('content', image['title'])) for url, image in self.images.items()]
+		return [dict(url=url, title=image['title'], content=image.get('content', image['title'])) for url, image in self.images]
 
 	@GET.codec('text/html')
 	def _text_html(self, client):

@@ -28,18 +28,18 @@ class Graffiti(Resource):
 			</p>
 			<p>
 				Schon immer war das Zeichnen - und später auch das Sprayen - eine meiner großen Leidenschaften.
-				Nun, 5 Jahre nach meiner ersten Auftragsarbeit, kann ich auf einige Erfahrungen zurückgreifen und biete meine Dienste an.
+				Nun, 5 Jahre nach meiner ersten Auftragsarbeit (2010), kann ich auf einige Erfahrungen zurückgreifen und biete meine Dienste an.
 			</p>
 			<p>
-				Ganz gleich, ob Partykeller, Garagentor oder Wohnzimmerwand - für jede Atmosphäre gestalte ich passende Motive,
+				Ganz gleich, ob Partykeller, Garagentor, Wohnzimmerwand oder Jugendzentrum - für jede Atmosphäre gestalte ich passende Motive,
 				die persönlichen Vorstellungen entsprechen.
 			</p>
 			<p>
-				Des weiteren biete ich auch Zeichnungen auf Papier, Graffiti-body-painting und Schriftgestaltung an.
+				Des weiteren biete ich auch Zeichnungen auf Papier und Schriftgestaltung an.
 			</p>
 			<p>
 				Bei Interesse jeglicher Art, kann ich über das <a href="/contact/">Kontaktformular dieser Website</a> kontaktiert werden.
-				Nach Absprache bin ich auch gerne bereit für Telefonate oder persönliche Gespräche.
+				Nach Absprache kann ich auch gerne per Telefon oder einem persönlichen Gespräch bereit.
 			</p>
 			<p>
 				Mit freundlichem Gruß und viel Spaß auf dieser Website<br>

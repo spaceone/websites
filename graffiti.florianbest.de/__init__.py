@@ -17,6 +17,8 @@ class Domain(_Domain):
 		self.www_path = os.path.realpath(os.path.dirname(__file__))
 		self.template_path = os.path.join(self.www_path, 'templates')
 		self.static_path = os.path.join(self.www_path, 'files')
+		#self.localedir = self.config.get('i18n', 'localedir')
+		#self.textdomain = self.config.get('i18n', 'textdomain')
 
 		root = Graffiti(channel='graffiti')
 		self += root

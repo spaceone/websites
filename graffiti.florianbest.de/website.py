@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import smtplib
+import datetime
+from email.mime.text import MIMEText
+
 from circuits.http.server.resource import method
+from httoop.status import UNPROCESSABLE_ENTITY
 
 from .base import Resource
 
@@ -269,9 +274,101 @@ class Kontakt(Resource):
 
 	@method
 	def GET(self, client):
-		return '''<br>Formular wird gerade überarbeitet:
-			vorläufige E-Mail-Adresse: graffiti at florianbest punkt de<br><br><br><br>'''.encode('utf-8')
+		return """Kontakt per Formular oder E-Mail-Adresse: graffiti at florianbest punkt de
+<br/>
+<form method="POST" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" name="contactform">
+	<p>
+	<label for="contact_tile">Title</label>
+	<input name="title" type="radio" value="Mr.">Mr.</input>
+	<input name="title" type="radio" value="Mrs.">Mrs.</input>
+	</p>
+
+	<p>
+	<label for="contact_name">Name</label>
+	<input type="text" id="contact_name" name="name" />
+	</p>
+
+	<p>
+	<label for="contact_from">E-Mail address</label>
+	<input type="email" id="contact_form" name="from" required="required" />
+	</p>
+
+	<p>
+	<label for="contact_website">Website</label>
+	<input type="url" id="contact_website" name="website"/>
+	</p>
+
+	<p>
+	<label for="contact_copy">Send me a copy</label>
+	<input type="checkbox" name="copy" id="contact_copy" />
+	</p>
+
+	<p>
+	<label for="contact_subject">Subject</label>
+	<input type="text" name="subject" id="contact_subject"/>
+	</p>
+
+	<p>
+	<label for="contact_message">Message</label>
+	<textarea id="contact_message" name="message" required="required">&nbsp;</textarea>
+	</p>
+
+	<!-- TODO: captcha -->
+
+	<p>
+	<input type="submit" value="Send" />
+	</p>
+</form>""".encode('utf-8')
 	GET.codec('text/html')
+
+	@method
+	def POST(self, client):
+		default_sender = unicode('bm9yZXBseUBmbG9yaWFuYmVzdC5kZQ=='.decode('base64'))
+		receiver = unicode('Z3JhZmZpdGlAZmxvcmlhbmJlc3QuZGU='.decode('base64'))
+		escape = lambda s: repr(s).lstrip('u')[1:-1]
+		data = dict(client.request.body.data)
+		subject = escape(data.get('subject', u''))
+		sender = escape(data.get('from', default_sender))
+		if u'@' not in sender:
+			sender = default_sender
+		if data.get('name') and '<' not in data['name'] and '>' not in data['name']:
+			sender = u'%s <%s>' % (escape(data['name']), sender)
+			sender = sender.replace(u',', '')
+
+		text = u'''Graffiti Contact form:
+%s %s <%s> wrote a message via the contact form.
+Website: %s
+Copy: %s
+Subject: %s
+HTTP-Request: %s
+IP-Address: %s
+Hostname: %s
+Date: %s
+Message: %s
+		'''
+		try:
+			text = text % (
+				data['title'], data['name'], data['from'], data['website'], data.get('copy'),
+				data['subject'], repr(dict(client.request.headers)), client.remote.ip,
+				client.remote.name, datetime.datetime.now().isoformat(), data['message']
+			)
+		except KeyError as exc:
+			raise UNPROCESSABLE_ENTITY('Missing field: %r' % (str(exc),))
+
+		message = MIMEText(text.encode('utf-8'))
+		message['From'] = sender
+		message['To'] = receiver
+		message['Subject'] = subject
+		message['Content-Type'] = 'text/plain; charset=UTF-8'
+		if data.get('copy') == 'on':
+			message['CC'] = sender
+
+		connection = smtplib.SMTP('localhost')
+		connection.sendmail(sender, [receiver], message.as_string())
+		connection.quit()
+		return 'Vielen Dank für die E-Mail! Ich werde sobald wie möglich antworten.'
+	POST.accept('application/x-www-form-urlencoded')
+	POST.codec('text/html')
 
 
 class Robots(Resource):

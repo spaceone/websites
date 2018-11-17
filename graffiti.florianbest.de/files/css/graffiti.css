@@ -113,7 +113,9 @@ span.bordered {
 	display: inline-block;
 /*	border: thin solid #2085F1;*/
 }
-div#content img {
+div#content img,
+input,
+textarea {
 	border: thin solid #2085F1;
 }
 div#content p {

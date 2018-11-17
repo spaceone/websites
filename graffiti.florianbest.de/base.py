@@ -113,3 +113,6 @@ class Resource(Resource):
 			raise INTERNAL_SERVER_ERROR('The template %r was not found in %r' % (self.template_name, self.template_path))
 		except TemplateSyntaxError:
 			raise
+
+	def textdomain(self, client):
+		return client.domain.textdomain

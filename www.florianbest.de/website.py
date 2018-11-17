@@ -98,6 +98,7 @@ class Contact(Resource):
 		receiver = unicode(client.domain.config.get('contact', 'receive_address'))
 		escape = lambda s: repr(s).lstrip('u')[1:-1]
 		data = dict(client.request.body.data)
+		data.setdefault('copy', False)
 		subject = escape(data.get('subject', u''))
 		sender = escape(data.get('from', default_sender))
 		if u'@' not in sender:

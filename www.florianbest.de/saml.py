@@ -2,12 +2,12 @@
 
 import os
 
-from httoop import TEMPORARY_REDIRECT, SEE_OTHER, BAD_REQUEST
+from httoop import TEMPORARY_REDIRECT, SEE_OTHER, BAD_REQUEST, MULTIPLE_CHOICES, URI
 
 from circuits.http.server.resource import method
 from circuits.http.server.saml.service_provider import ServiceProvider, SamlLogoutRequest
 from circuits.http.server.saml.events import single_sign_on, saml_logout_request, saml_logout_response, saml_global_logout
-from circuits.http.server.saml.models import SamlAuthnRequest
+from circuits.http.server.saml.models import SamlAuthnRequest, MultipleIdentityProvider
 
 from .base import _Resource, Resource
 
@@ -39,7 +39,7 @@ class Metadata(_Resource):
 		return client.data
 
 
-class AssertionConsumerService(_Resource):
+class AssertionConsumerService(Resource):
 
 	path = 'acs/'
 
@@ -58,6 +58,16 @@ class AssertionConsumerService(_Resource):
 		))
 		self.fire(response, self.saml.channel)
 		yield self.wait(response)
+		if response.value.errors:
+			exc = response.value.value[1]
+			if isinstance(exc, MultipleIdentityProvider):
+				urls = []
+				for idp in exc.idps:
+					uri = URI(client.request.uri)
+					uri.query = {'identity_provider': idp}
+					urls.append(bytes(uri))
+				raise MULTIPLE_CHOICES(urls, str(exc))
+			raise exc
 		yield response.value.value.apply(client)
 
 	@GET.codec('*/*')
@@ -104,7 +114,7 @@ class SamlLogout(Resource):
 		raise SEE_OTHER('/logout')
 
 
-class SingleLogoutService(_Resource):
+class SingleLogoutService(Resource):
 
 	path = 'slo/'
 
@@ -128,9 +138,12 @@ class SingleLogoutService(_Resource):
 	POST.accept('application/x-www-form-urlencoded')
 
 
-class SAML(_Resource):
+class SAML(Resource):
 
 	path = '/saml'
+
+	def website_template_path(self, client):
+		return self.parent.website_template_path(client)
 
 	@method
 	def GET(self, client):

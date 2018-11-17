@@ -33,6 +33,7 @@
 					</ul>
 				</li>
 				<li class="sec"><h2><a href="/logout">Logout</a></h2></li>
+				<li class="sec"><h2><a href="/saml/logout">SAML Logout</a></h2></li>
 			</py:if>
 			<py:if test="user.is_guest">
 				<!--<li class="sec"><h2><a href="/news">News {GWF_Notice::getUnreadNews($$user)}</a></h2></li>
@@ -43,6 +44,7 @@
 				<li class="sec"><h2><a href="/header">HTTP-Header</a></h2></li>
 				<li class="sec"><h2><a href="http://graffiti.florianbest.de/">Graffiti</a></h2></li>
 				<li class="sec"><h2><a href="/login">Login</a></h2></li>
+				<li class="sec"><h2><a href="/saml/acs/">SAML Login</a></h2></li>
 			</py:if>
 
 			</ol>

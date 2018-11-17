@@ -276,10 +276,12 @@ class Kontakt(Resource):
 	def GET(self, client):
 		return """Kontakt per Formular oder E-Mail-Adresse: graffiti at florianbest punkt de
 <br/>
+<br/>
+<br/>
 <form method="POST" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" name="contactform">
 	<p>
 	<label for="contact_tile">Title</label>
-	<input name="title" type="radio" value="Mr.">Mr.</input>
+	<input name="title" type="radio" value="Mr." checked="checked">Mr.</input>
 	<input name="title" type="radio" value="Mrs.">Mrs.</input>
 	</p>
 

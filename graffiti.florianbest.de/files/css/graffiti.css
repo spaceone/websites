@@ -134,3 +134,16 @@ p.copyright {
 h1 {
 	text-align: center;
 }
+
+div#content label {
+	float: left;
+	clear: left;
+	width: 45%;
+	text-align: right;
+	margin-right: 10px;
+}
+
+textarea {
+	min-height: 200px;
+	min-width: 640px;
+}

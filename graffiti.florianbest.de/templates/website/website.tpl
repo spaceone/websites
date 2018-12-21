@@ -2,7 +2,7 @@
 <html lang="de" dir="ltr">
 <head>
 	<title>${title} - Graffiti von Florian Best</title>
-	<base href="http://graffiti.florianbest.de/"/>
+	<base href="${base}"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
 	<meta name="author" content="Florian Best"/>

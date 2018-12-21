@@ -72,6 +72,7 @@ class Graffiti(Resource):
 			<li>Weiterbildung zum Jugendgruppenleiter im Rahmen der “JuLeiCa”-Ausbildung</li>
 		</ul>
 	</div>'''
+
 	@GET.codec('text/html')
 	def _text_html(self, client):
 		return client.data
@@ -160,14 +161,14 @@ class Workshopangebot(Resource):
 		<h3>1. Tag - Graffiti kennenlernen und Zeichnen üben</h3>
 		<ul>
 			<li>Graffiti vorstellen + mein Bezug dazu</li>
-			<li>Welches Interesse besteht an der Teilnahme?
-			<li>Wer hatte schon mit Graffiti oder Kunst zu tun.
+			<li>Welches Interesse besteht an der Teilnahme?</li>
+			<li>Wer hatte schon mit Graffiti oder Kunst zu tun.</li>
 			<li>Wünsche und Fragen klären</li>
 			<li>Handschrift ansehen</li>
 			<li>Bleistifthaltung lernen</li>
-			<li>Buchstaben:
-			<li>Grundaufbau -> woraus bestehen Buchstaben?,
-			<li>Dreiecke, Rechtecke, Quadrate, Kreise, Halbkreise, Linien üben
+			<li>Buchstaben:</li>
+			<li>Grundaufbau -> woraus bestehen Buchstaben?,</li>
+			<li>Dreiecke, Rechtecke, Quadrate, Kreise, Halbkreise, Linien üben</li>
 			<li>Einteilung von Buchstaben in sinngemäße Balken</li>
 		</ul>
 	</p>
@@ -175,27 +176,27 @@ class Workshopangebot(Resource):
 	<p>
 		Übung:
 		<ul>
-			<li>Zeichnung von Buchstaben mit Bleistift (!), ohne Lineal & Geodreieck,
-			<li>Proportioneneinteilung mittels Einteilung des Blatts durch Linie,
-			<li>Schräge und krumme Linien sind erstmal nicht schlimm.
-			<li>gerade Linien üben,
-			<li>stabile Buchstaben
-			<li>niemals kritzeln (!),
-			<li>nicht durchstreichen,
-			<li>gleichmäßigkeit und synchrone Buchstaben,
-			<li>Gefühl für Buchstaben entwickeln,
-			<li>mit Fineliner fertige buchstaben nachziehen.
-			<li>Kugelschreiber sind für kritzeleien!
+			<li>Zeichnung von Buchstaben mit Bleistift (!), ohne Lineal & Geodreieck,</li>
+			<li>Proportioneneinteilung mittels Einteilung des Blatts durch Linie,</li>
+			<li>Schräge und krumme Linien sind erstmal nicht schlimm.</li>
+			<li>gerade Linien üben,</li>
+			<li>stabile Buchstaben</li>
+			<li>niemals kritzeln (!),</li>
+			<li>nicht durchstreichen,</li>
+			<li>gleichmäßigkeit und synchrone Buchstaben,</li>
+			<li>Gefühl für Buchstaben entwickeln,</li>
+			<li>mit Fineliner fertige buchstaben nachziehen.</li>
+			<li>Kugelschreiber sind für kritzeleien!</li>
 		</ul>
 	</p>
 
 	<p>
 		Buchstaben (metamorphose):
 		<ol>
-			<li>Erweiterung, kaligraphische und schöne buchstaben, eindrucksvoll wirken lassen, Blockige Buchstaben
-			<li>abstrakter werden, strecken, ziehen, transformieren, dicke und dünne bearbeiten, wichtigkeit der einzelnen Buchstabenteile
-			<li>4-fach Linien, modellieren, dinge anhängen, Elemente repertuare lernen, Pfeile ausdrucksvoll wirken lassen, das Auge schulen (!)
-			<li>mit Filzstift nachziehen
+			<li>Erweiterung, kaligraphische und schöne buchstaben, eindrucksvoll wirken lassen, Blockige Buchstaben</li>
+			<li>abstrakter werden, strecken, ziehen, transformieren, dicke und dünne bearbeiten, wichtigkeit der einzelnen Buchstabenteile</li>
+			<li>4-fach Linien, modellieren, dinge anhängen, Elemente repertuare lernen, Pfeile ausdrucksvoll wirken lassen, das Auge schulen (!)</li>
+			<li>mit Filzstift nachziehen</li>
 		</ol>
 
 		freiwillige Hausaufgabe: Üben, lernen, skizzieren.
@@ -204,12 +205,12 @@ class Workshopangebot(Resource):
 	<p>
 		<h3>2. Tag - Spitzname als Graffiti umsetzten</h3>
 		<ul>
-			<li>Spitzname skizzieren
-			<li>verschiedene Graffiti am PC angucken und kommentieren
-			<li>3D-Style, Blöcke, Schatten, Highlights, 2nd Outlines, Backgrounds
-			<li>Taggen, Bubble Style & verscheidene Styles
-			<li>Skizzen fertigstellen
-			<li>Hintergrund ausdenken, farbig ausfüllen, eventuell Charakter/Figuren ausdenken
+			<li>Spitzname skizzieren</li>
+			<li>verschiedene Graffiti am PC angucken und kommentieren</li>
+			<li>3D-Style, Blöcke, Schatten, Highlights, 2nd Outlines, Backgrounds</li>
+			<li>Taggen, Bubble Style & verscheidene Styles</li>
+			<li>Skizzen fertigstellen</li>
+			<li>Hintergrund ausdenken, farbig ausfüllen, eventuell Charakter/Figuren ausdenken</li>
 		</ul>
 
 		Wand streichen bzw. zum Sprühen vorbereiten
@@ -218,25 +219,26 @@ class Workshopangebot(Resource):
 	<p>
 		<h3>3 - n. Tag - Sprühen:</h3>
 		<ul>
-			<li>Spraydosen → Unterschiede
-			<li>wie Sprühe ich?, Abstand zur Wand, Handhaltung, Linien ziehen, wo/wie absetzen?
-			<li>Caps: stärken, größe, dick, dünn, usw.
-			<li>Sprüheffekte
-			<li>wozu dient das schütteln der Dosen?: Vermeidung, dass Caps verstopfen und damit die Farbe gut pigmentiert ist
+			<li>Spraydosen → Unterschiede</li>
+			<li>wie Sprühe ich?, Abstand zur Wand, Handhaltung, Linien ziehen, wo/wie absetzen?</li>
+			<li>Caps: stärken, größe, dick, dünn, usw.</li>
+			<li>Sprüheffekte</li>
+			<li>wozu dient das schütteln der Dosen?: Vermeidung, dass Caps verstopfen und damit die Farbe gut pigmentiert ist</li>
 		</ul>
 	</p>
 
 	<ol>
-		<li>Grundbau der Buchstaben, dann modellieren (Grundlinien mit heller Farbe (z.B. himalayablau))
-		<li>modell nachziehen (beige oder hellgelb)
-		<li>Fill in
-		<li>Blöcke, 3D, Schatten, highlights, effekte
-		<li>Hintergrund
-		<li>Outline
-		<li>2nd Outline
-		<li>1st Outline nachziehen
+		<li>Grundbau der Buchstaben, dann modellieren (Grundlinien mit heller Farbe (z.B. himalayablau))</li>
+		<li>modell nachziehen (beige oder hellgelb)</li>
+		<li>Fill in</li>
+		<li>Blöcke, 3D, Schatten, highlights, effekte</li>
+		<li>Hintergrund</li>
+		<li>Outline</li>
+		<li>2nd Outline</li>
+		<li>1st Outline nachziehen</li>
 	</ol>
 	'''
+
 	@GET.codec('text/html')
 	def _text_html(self, client):
 		return client.data

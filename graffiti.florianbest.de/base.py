@@ -87,7 +87,7 @@ class Resource(Resource):
 
 	@classmethod
 	def load(cls, path):
-		if not path in cls.loaders:
+		if path not in cls.loaders:
 			cls.loaders[path] = TemplateLoader(path, auto_reload=True)
 		return cls.loaders[path]
 

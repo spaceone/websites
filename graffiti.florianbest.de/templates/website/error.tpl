@@ -2,7 +2,7 @@
 <html lang="de" dir="ltr" xmlns:py="http://genshi.edgewall.org/">
 <head>
 	<title>Graffiti - www.FlorianBest.de</title>
-	<base href="http://graffiti.florianbest.de/"/>
+	<base href="${base}"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
 	<meta name="author" content="Florian Best"/>

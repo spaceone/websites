@@ -7,6 +7,7 @@ from ConfigParser import ConfigParser, NoSectionError
 from httoop import ServerHeader
 from circuits import handler
 from circuits.http.server.__main__ import HTTPServer
+from circuits.http.server.wsgi import Application
 
 
 class Server(HTTPServer):
@@ -55,3 +56,6 @@ class Server(HTTPServer):
 if __name__ == '__main__':
 	ServerHeader.value = 'circuits.http/1.0 %s' % (ServerHeader,)
 	Server.main()
+else:
+	ServerHeader.value = 'circuits.http.wsgi/1.0 %s' % (ServerHeader,)
+	application = Application(Server, '-w', '-n')

@@ -19,7 +19,22 @@ class websiteproperty(property):
 		property.__init__(self, fget, *a, **kw)
 
 
-class Resource(Resource):
+class _Resource(Resource):
+
+	def frame_options(self, client):
+		return 'DENY'
+
+	def xss_protection(self, client):
+		return '1; mode=block'
+
+	def content_type_options(self, client):
+		return 'nosniff'
+
+	def permitted_cross_domain_policies(self, client):
+		return 'master-only'
+
+
+class Resource(_Resource):
 
 	meta_description = ''
 	robots = 'index, follow'

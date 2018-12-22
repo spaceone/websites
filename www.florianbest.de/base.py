@@ -49,6 +49,11 @@ class _Resource(GettextResource, BaseResource):
 	def expires(self, client):
 		return '-1'
 
+	def content_encoding(self, client):
+		for encoding in client.request.headers.elements('Accept-Encoding'):
+			if encoding.value in ('gzip', 'deflate'):
+				return encoding.value
+
 	def textdomain(self, client):
 		return client.domain.textdomain
 

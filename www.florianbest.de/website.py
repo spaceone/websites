@@ -99,7 +99,11 @@ class Contact(Resource):
 
 		default_sender = unicode(client.domain.config.get('contact', 'sender_address'))
 		receiver = unicode(client.domain.config.get('contact', 'receive_address'))
-		data = dict(client.request.body.data)
+		data = {}
+		for key, val in dict(client.request.body.data).items():
+			if isinstance(val, unicode):
+				val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
+			data[key] = val
 		data.setdefault('copy', False)
 		copy = data['copy'] == 'on'
 		subject = escape(data.get('subject', u''))
@@ -131,11 +135,10 @@ Message: %s
 		except KeyError as exc:
 			raise UNPROCESSABLE_ENTITY('Missing field: %r' % (str(exc),))
 
-		message = MIMEText(text.encode('utf-8'))
+		message = MIMEText(text.encode('utf-8'), 'plain', 'UTF-8')
 		message['From'] = sender
 		message['To'] = receiver
 		message['Subject'] = subject
-		message['Content-Type'] = 'text/plain; charset=UTF-8'
 		if copy:
 			message['CC'] = sender
 

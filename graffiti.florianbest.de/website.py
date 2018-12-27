@@ -332,13 +332,22 @@ class Kontakt(Resource):
 
 	@method
 	def POST(self, client):
+		def escape(s):
+			return repr(s).lstrip('u')[1:-1]
+
 		default_sender = unicode('bm9yZXBseUBmbG9yaWFuYmVzdC5kZQ=='.decode('base64'))
 		receiver = unicode('Z3JhZmZpdGlAZmxvcmlhbmJlc3QuZGU='.decode('base64'))
-		escape = lambda s: repr(s).lstrip('u')[1:-1]
-		data = dict(client.request.body.data)
+		data = {}
+		for key, val in dict(client.request.body.data).items():
+			if isinstance(val, unicode):
+				val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
+			data[key] = val
+		data.setdefault('copy', False)
+		copy = data['copy'] == 'on'
 		subject = escape(data.get('subject', u''))
 		sender = escape(data.get('from', default_sender))
 		if u'@' not in sender:
+			copy = False
 			sender = default_sender
 		if data.get('name') and '<' not in data['name'] and '>' not in data['name']:
 			sender = u'%s <%s>' % (escape(data['name']), sender)
@@ -357,19 +366,18 @@ Message: %s
 		'''
 		try:
 			text = text % (
-				data['title'], data['name'], data['from'], data['website'], data.get('copy'),
-				data['subject'], repr(dict(client.request.headers)), client.remote.ip,
+				data['title'], data['name'], data['from'], data['website'], data['copy'],
+				data['subject'], '\n'.join('%s: %s' % (escape(key), escape(val)) for key, val in client.request.headers.items()), client.remote.ip,
 				client.remote.name, datetime.datetime.now().isoformat(), data['message']
 			)
 		except KeyError as exc:
 			raise UNPROCESSABLE_ENTITY('Missing field: %r' % (str(exc),))
 
-		message = MIMEText(text.encode('utf-8'))
+		message = MIMEText(text.encode('utf-8'), 'plain', 'UTF-8')
 		message['From'] = sender
 		message['To'] = receiver
 		message['Subject'] = subject
-		message['Content-Type'] = 'text/plain; charset=UTF-8'
-		if data.get('copy') == 'on':
+		if copy:
 			message['CC'] = sender
 
 		connection = smtplib.SMTP('localhost')

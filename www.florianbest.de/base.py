@@ -122,9 +122,11 @@ class Resource(_Resource):
 		except TemplateSyntaxError:
 			raise
 
-	@property
-	def website_template_path(self):
-		return os.path.join(self.parent.template_path, 'website/')
+	def website_template_path(self, client):
+		template_path = self.parent.template_path
+		if callable(template_path):
+			template_path = template_path(client)
+		return os.path.join(template_path, 'website/')
 
 	@property
 	def website_template_name(self):
@@ -154,4 +156,4 @@ class Resource(_Resource):
 		if client.request.headers.get('X-Requested-With', '').lower() == 'XMLHttpRequest'.lower():
 			return
 
-		client.response.body = self.render_template(self.website_template_path, self.website_template_name, self.website_tplvars(client))
+		client.response.body = self.render_template(self.website_template_path(client), self.website_template_name, self.website_tplvars(client))

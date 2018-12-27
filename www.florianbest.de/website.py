@@ -94,14 +94,18 @@ class Contact(Resource):
 
 	@method
 	def POST(self, client):
+		def escape(s):
+			return repr(s).lstrip('u')[1:-1]
+
 		default_sender = unicode(client.domain.config.get('contact', 'sender_address'))
 		receiver = unicode(client.domain.config.get('contact', 'receive_address'))
-		escape = lambda s: repr(s).lstrip('u')[1:-1]
 		data = dict(client.request.body.data)
 		data.setdefault('copy', False)
+		copy = data['copy'] == 'on'
 		subject = escape(data.get('subject', u''))
 		sender = escape(data.get('from', default_sender))
 		if u'@' not in sender:
+			copy = False
 			sender = default_sender
 		if data.get('name') and '<' not in data['name'] and '>' not in data['name']:
 			sender = u'%s <%s>' % (escape(data['name']), sender)
@@ -121,7 +125,7 @@ Message: %s
 		try:
 			text = text % (
 				data['title'], data['name'], data['from'], data['website'], data['copy'],
-				data['subject'], repr(dict(client.request.headers)), client.remote.ip,
+				data['subject'], '\n'.join('%s: %s' % (escape(key), escape(val)) for key, val in client.request.headers.items()), client.remote.ip,
 				client.remote.name, datetime.datetime.now().isoformat(), data['message']
 			)
 		except KeyError as exc:
@@ -132,7 +136,7 @@ Message: %s
 		message['To'] = receiver
 		message['Subject'] = subject
 		message['Content-Type'] = 'text/plain; charset=UTF-8'
-		if data['copy'] == 'on':
+		if copy:
 			message['CC'] = sender
 
 		connection = smtplib.SMTP('localhost')
@@ -183,7 +187,7 @@ class Favicon(_Resource):
 	@method
 	def GET(self, client, color='white'):
 		data = b'AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAA'\
-				'BAAAAAAAAAAAAAAAAAAA\nAAAAAAD/////AAAAAA=='
+			'BAAAAAAAAAAAAAAAAAAA\nAAAAAAD/////AAAAAA=='
 		data = base64.decodestring(data)
 		data = list(data)
 		if color == 'green':

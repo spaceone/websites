@@ -55,6 +55,7 @@ class Page(Resource, SQLResource):
 	options = Column(Integer, default=ENABLED, nullable=False)
 	indexed = type('Column', (object,), dict(default=False, type=type('type', (object,), dict(python_type=bool))))()
 	follow = type('Column', (object,), dict(default=False, type=type('type', (object,), dict(python_type=bool))))()
+	enabled = type('Column', (object,), dict(default=False, type=type('type', (object,), dict(python_type=bool))))()
 
 	# TODO: create an wrapper arround Column, to add also the following properties: readonly, description, label, etc.
 
@@ -71,6 +72,7 @@ class Page(Resource, SQLResource):
 	views.label = "Page visits"
 	indexed.label = 'Page indexed by robots?'
 	follow.label = 'Page followed by robots?'
+	enabled.label = 'Page enabled?'
 
 	author.description = 'The author of this page'
 	groups.description = 'groups which are allowed to access this page'
@@ -101,7 +103,7 @@ class Page(Resource, SQLResource):
 		validate_meta_description = validate_content = StringValidator()
 	validate_indexed = validate_follow = BoolSanitizer()
 
-	layout = ['url', 'title', 'author', 'groups', 'creation_date', 'modify_date', 'meta_tags', 'meta_description', 'content', 'views', 'indexed', 'follow']
+	layout = ['url', 'title', 'author', 'groups', 'creation_date', 'modify_date', 'meta_tags', 'meta_description', 'content', 'views', 'indexed', 'follow', 'enabled']
 
 #	# FIXME: is not being added to __dict__
 #	@hybrid_property
@@ -119,6 +121,7 @@ class Page(Resource, SQLResource):
 		columns.update(dict(
 			indexed=self.indexed,
 			follow=self.follow,
+			enabled=self.enabled,
 		))
 		# remove the hidden properties from our schema
 		columns.pop('options')
@@ -176,6 +179,7 @@ class Page(Resource, SQLResource):
 		# translate options
 		values['indexed'] = obj.option_enabled(Page.INDEXED)
 		values['follow'] = obj.option_enabled(Page.FOLLOW)
+		values['enabled'] = obj.option_enabled(Page.ENABLED)
 
 		# format dates
 		if values['modify_date']:
@@ -201,22 +205,24 @@ class Page(Resource, SQLResource):
 
 	@method
 	def PUT(self, client, _, url):
-		# remove immutable things
 		data = dict(client.request.body.data)
 		if client.request.headers.get('Content-Type').startswith('application/x-www-form-urlencoded'):
 			for key, value in data.items():
 				data[key] = value.encode('latin-1', 'replace').decode('utf-8', 'replace')
+		# remove immutable things
 		data.pop('views')
 		data.pop('creation_date')
 		if client.request.method == 'POST':
 			data['author'] = client.user.username
 		data['modify_date'] = datetime.now()
 
-		options = Page.ENABLED
+		options = 0
 		if data.pop('follow', False):
 			options |= Page.FOLLOW
 		if data.pop('indexed', False):
 			options |= Page.INDEXED
+		if data.pop('enabled', False):
+			options |= Page.ENABLED
 		data['options'] = options
 
 		client.request.body.data = data
@@ -236,6 +242,7 @@ class Page(Resource, SQLResource):
 		try:
 			super(Page, self).GET(client, url=url)
 		except NOT_FOUND:
+			client.request.uri.path = url
 			return self.PUT(client, _, url)
 		else:
 			raise UNPROCESSABLE_ENTITY(_('The page with the URL already exists.'))
@@ -297,19 +304,22 @@ class Form(Resource):
 			type_ = 'text'
 			value = page.get(name, '')
 			content = ''
-
+			attrs = {}
+			if column['readonly']:
+				attrs['readonly'] = 'readonly'
 			if column['type'] is bool:
 				type_ = 'checkbox'
+				if value:
+					attrs['checked'] = 'checked'
+				value = 'on'
 			elif name == 'content':
 				type_ = 'textarea'
 				content = value
 				value = ''
 
-			attrs = {'name': name, 'value': value, 'type': type_}
-			if column['readonly']:
-				attrs['readonly'] = 'readonly'
+			attrs.update({'name': name, 'value': value, 'type': type_})
 
-			fields.append({'type': type_, 'attrs': attrs, 'value': value, 'content': content, 'label': column['label']})
+			fields.append({'type': type_, 'attrs': attrs, 'value': value, 'content': content, 'label': column['label'], 'description': column['description']})
 		return {
 			'page': page,
 			'schema': schema,
@@ -317,6 +327,78 @@ class Form(Resource):
 		}
 	GET.codec('application/json', 0.9)
 	GET.conditions(is_user('root'))
+
+
+class FormAdd(Resource):
+
+	path = '/pages/add'
+
+	@websiteproperty
+	def website_scripts(self):
+		scripts = super(FormAdd, self).website_scripts
+		scripts.append(JavaScript('/js/jquery-3.3.1.min.js'))
+		return scripts
+
+	@method
+	def GET(self, client, _):
+		parent = Page()
+		schema = parent.schema
+		fields = []
+		for name in parent.layout:
+			column = schema[name]
+			type_ = 'text'
+			value = column['default']
+			content = ''
+			attrs = {}
+			if column['readonly']:
+				attrs['readonly'] = 'readonly'
+			if column['type'] is bool:
+				type_ = 'checkbox'
+				if value:
+					attrs['checked'] = 'checked'
+				value = 'on'
+			elif name == 'content':
+				type_ = 'textarea'
+				content = value or ' '
+				value = None
+
+			attrs.update({'name': name, 'value': value, 'type': type_})
+
+			fields.append({'type': type_, 'attrs': attrs, 'value': value, 'content': content, 'label': column['label'], 'description': column['description']})
+		return {
+			'rel': {'create-form': '/pages/'},
+			'schema': schema,
+			'fields': fields,
+		}
+	GET.codec('application/json', 0.9)
+	GET.conditions(is_user('root'))
+
+
+class Pages(Resource):
+	path = '/pages/'
+
+	@method
+	def GET(self, client, _):
+		result = client.domain.session.query(Page.url, Page.title).all()
+		return dict(pages=({'url': ipage.url, 'title': ipage.title} for ipage in result), rel={'create-form': '/pages/add'})
+	GET.codec('application/json', 0.9)
+	GET.conditions(is_user('root'))
+
+	@method
+	def POST(self, client, _):
+		data = dict(client.request.body.data)
+		url = data['url']
+		parent = Page()
+		try:
+			super(Page, parent).GET(client, url=url)
+		except NOT_FOUND:
+			return parent.PUT(client, _, url)
+		else:
+			raise UNPROCESSABLE_ENTITY(_('The page with the URL already exists.'))
+	POST.conditions(is_user('root'))
+	POST.codec('application/json', 0.9)
+	POST.accept('application/json')
+	POST.accept('application/x-www-form-urlencoded')
 
 
 class Navigation(Resource):

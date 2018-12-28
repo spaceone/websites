@@ -15,12 +15,25 @@ $(document).ready(function() {
 			url: form.attr('action'),
 			data: form.serialize()
 		}).done(function(data) {
+			$('#content').append(data);
 			location.reload();
 		}).fail(function(data) {
 			$('#content').append(data.responseText)
 		});
+	});
+	$('form[method="DELETE"]').submit(function(e) {
+		var form = $(this);
 
 		e.preventDefault();
+		$.ajax({
+			type: form.attr('method'),
+			url: form.attr('action'),
+			data: form.serialize()
+		}).done(function(data) {
+			$('#content').empty().append(data);
+		}).fail(function(data) {
+			$('#content').append(data.responseText)
+		});
 	});
 });
 	</script>
@@ -34,7 +47,7 @@ $(document).ready(function() {
 		<py:for each="field in fields">
 			<py:choose test="field['type']">
 		<p>
-			<label for="${field['attrs']['name']}">${field['label']}</label>
+			<label for="${field['attrs']['name']}" title="${field['description']}">${field['label']}</label>
 			<textarea py:when="'textarea'" py:content="field['content']" py:attrs="field['attrs']"/>
 			<input py:otherwise="" py:content="field['content']" py:attrs="field['attrs']"/>
 		</p>

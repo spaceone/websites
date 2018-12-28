@@ -1,6 +1,24 @@
 <html xmlns:py="http://genshi.edgewall.org/" py:strip="">
 <?python from genshi import HTML ?>
 <?python from markdown import markdown ?>
+	<script type="text/javascript" py:if="not user.is_guest">
+$(document).ready(function() {
+	$('form[method="DELETE"]').submit(function(e) {
+		var form = $(this);
+
+		e.preventDefault();
+		$.ajax({
+			type: form.attr('method'),
+			url: form.attr('action'),
+			data: form.serialize()
+		}).done(function(data) {
+			$('#content').empty().append(data);
+		}).fail(function(data) {
+			$('#content').append(data.responseText)
+		});
+	});
+});
+	</script>
 	<section class="page">
 		<header>
 			<h1 class="title" py:content="title"/>
@@ -21,8 +39,8 @@
 			</div>
 		</footer>
 	</section>
-	<form method="DELETE" py:if="not user.is_guest">
-		<input type="button" value="Delete"/>
+	<form method="DELETE" action="${url}" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" py:if="not user.is_guest">
+		<input type="submit" value="Delete"/>
 	</form>
 	<a rel="edit-form" href="${rel['edit-form']}" py:if="not user.is_guest">
 		Modify

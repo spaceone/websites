@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import sessionmaker  # , relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 
 from httoop import NOT_FOUND, CREATED, GONE
 Base = declarative_base()
@@ -110,16 +111,22 @@ class SQLResource(object):
 		except NoResultFound:
 			exists = False
 			obj = self.__class__(**client.request.body.data)  # FIXME
+			for key, value in client.request.body.data.iteritems():
+				setattr(obj, key, value)
 			session.add(obj)
 		else:
 			exists = True
 			for key, value in client.request.body.data.iteritems():
 				setattr(obj, key, value)
 
-		session.commit()
+		try:
+			session.commit()
+		except IntegrityError:
+			session.rollback()
+			raise
 
 		if not exists:
-			client.response.status = CREATED.status
+			client.response.status = CREATED.code
 			client.response.headers['Location'] = client.request.uri.path
 
 		return obj
@@ -131,7 +138,11 @@ class SQLResource(object):
 			# TODO: is there a possibility to detect if the resource had exists?
 			raise GONE()
 		session.delete(obj)
-		session.commit()
+		try:
+			session.commit()
+		except IntegrityError:
+			session.rollback()
+			raise
 
 	# A POST request is allowed here to add, modify or delete a resource????
 

@@ -12,7 +12,7 @@ from circuits.http.events import request
 
 from .website import Index, Header, Login, Logout, Contact, Favicon, HTTPError, CSPViolation
 from .robots import Robots
-from .cms import Page, Form, Navigation
+from .cms import Page, Form, FormAdd, Pages, Navigation
 from .color import Color
 from .static import JavaScript, CascadeStyleSheet, Images
 from .db import create_engine, sessionmaker
@@ -46,7 +46,9 @@ class Domain(_Domain):
 		root += Robots(channel='website-robots')
 		root += Color(channel='website-layoutcolors')
 		root += Page(channel='website-cms-page')
+		root += Pages(channel='website-cms-pages')
 		root += Form(channel='website-cms-page-form')
+		root += FormAdd(channel='website-cms-page-form-add')
 		root += JavaScript(channel='website-javascript')
 		root += CascadeStyleSheet(channel='website-css')
 		root += Images(channel='website-images')

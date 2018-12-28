@@ -71,9 +71,105 @@ class HTTPError(Resource):
 		self.fire(response(client), client.server.channel)
 
 
+class Image(object):
+
+	def __init__(self, string, image):
+		self.image = image
+		self.string = string
+
+	def __str__(self):
+		return self.string
+
+	def __unicode__(self):
+		return unicode(str(self))
+
+
 class Header(Resource):
 	"""This resource shows us the HTTP request headers and the querystring parameters."""
 	path = '/header'
+
+	ISP = {
+		'alicedsl.de': 'Alice',
+		'aol.com': 'AOL',
+		'einsundeins.de': '1&1',
+		'pools.arcor-ip.net': 'Arcor',
+		't-dialin.net': 'Telekom',
+		't-ipconnect.de': 'Telekom',
+		'vodafone.de': 'Vodafone',
+		'd1-online.com': 'T-Mobile',
+		'superkabel.de': 'Kabel Deutschland',
+		'ewe-ip-backbone.de': 'EWE TEL',
+		'pppool.de': 'Freenet',
+		'hosteurope.de': 'Host Europe',
+		'kabelbw.de': 'Kabel BW',
+		'ish.de': 'Unitymedia',
+		'unitymediagroup.de': 'Unitymedia',
+		'mediaways.net': 'Telefonica',
+		'mnet-online.de': 'M-net',
+		'netcologne.de': 'NetCologne',
+		'osnanet.de': 'osnatel',
+		'qsc.de': 'QSC',
+		'sat-kabel-online.de': 'Sat-Kabel',
+		'versanet.de': 'Versatel',
+		'viaginterkom.de': 'ViagInterkom',
+	}
+	OS = {
+		'windows': 'Windows',
+		'NT 4.0': 'Windows NT',
+		'NT 5.0': 'Windows 2000',
+		'NT 5.1': 'Windows XP',
+		'NT 6.0': 'Windows Vista',
+		'NT 6.1': 'Windows 7',
+		'NT 6.2': 'Windows 8',
+		'NT 10': 'Windows 10',
+		'Windows NT': 'Windows',
+		'linux': 'Linux',
+		'ubuntu': 'Ubuntu',
+		'suse': 'Suse Linux',
+		'debian': 'Debian',
+		'gentoo': 'Gentoo',
+		'mint': 'Linux-Mint',
+		'archlinux': 'Archlinux',
+		'fedora': 'Fedora',
+		'backtrack': 'Backtrack',
+		'unix': 'Unix',
+		'jvm': 'JVM',
+		'freebsd': 'FreeBSD',
+		'bsd': 'BSD',
+		'mac os': 'Mac OS',
+		'solaris': 'Solaris',
+		'sunos': 'SunOS',
+		'irix': 'IRIX',
+		'amiga os': 'Amiga OS',
+		'openvms': 'OpenVMS',
+		'beos': 'BeOS',
+		'symbian os': 'Symbian OS',
+		'palm os': 'Palm OS',
+		'playstation': 'PlayStation Portable',
+		'os/2': 'OS/2',
+	}
+
+	BROWSER = {
+		'opera': 'Opera',
+		'chromium': 'Chromium',
+		'chrome': 'Google-Chrome',
+		'Firefox/': 'Mozilla Firefox',
+		'Trident/7.0': 'Internet Explorer 11',
+		'MSIE 10': 'Internet Explorer 10',
+		'MSIE 9': 'Internet Explorer 9',
+		'MSIE 8': 'Internet Explorer 8',
+		'MSIE 7': 'Internet Explorer 7',
+		'MSIE 6': 'Internet Explorer 6',
+		'MSIE 5': 'Internet Explorer 5',
+		'MSIE': 'Internet Explorer',
+		'Trident': 'Internet Explorer',
+		'safari': 'Safari',
+		'lynx': 'Lynx',
+		'konqueror': 'Konqueror',
+		'mozilla': 'Mozilla',
+		'w3m': 'w3m',
+		'curl': 'cURL',
+	}
 
 	@method
 	def GET(self, client):
@@ -81,16 +177,26 @@ class Header(Resource):
 		for authorization in ('Cookie', 'Authorization', 'Proxy-Authorization'):
 			if authorization in headers:
 				headers[authorization] = '***'
+		for key in headers.keys():
+			if key.startswith('X-Forwarded-') or key == 'Forwarded':
+				headers.pop(key)
 
 		infos = [
+			('Internet Service Provider', self.get_isp(client)),
+			('Operating System', self.get_operating_system(client)),
+			('Browser', self.get_browser(client)),
 			('Username', client.user.username),
 			('IP-Address', client.remote.ip),
 			('Hostname', client.remote.name),
 			('Secure connection', client.server.secure),
+			('Transport protocol', client.request.uri.scheme),
+			('WSGI', None),  # TODO
+			('Language', None),  # TODO
+			('Country', None),  # TODO
 		]
+		infos = [info for info in infos if info[1] is not None]
 		# TODO: add used / free / total space, RAM, CPU usage
 		# TODO: add number of SQL queries
-		# TODO: add WSGI info
 		# TODO: add screen resolution: document.write(screen.width + 'x' + screen.height);
 		# TODO: add Country, OS, Browser, Provider (as images)
 		# TODO: add site statistics: online atm, visitor total, visitor today, visitor yesterday, online today, online total
@@ -101,6 +207,68 @@ class Header(Resource):
 			params=dict(client.request.uri.query).items()
 		)
 	GET.codec('application/json', 0.9)
+
+	def get_operating_system(self, client):
+		ops = [
+			'NT 4.0', 'NT 5.0', 'NT 5.1', 'NT 6.0', 'NT 6.1', 'NT 6.2', 'NT 10', 'Windows NT',  # Windows
+			'ubuntu', 'suse', 'debian', 'gentoo', 'mint', 'archlinux', 'fedora', 'backtrack', 'linux',  # Linux
+			'unix', 'jvm', 'freebsd', 'bsd', 'mac os', 'solaris', 'sunos', 'irix', 'amiga os', 'openvms', 'beos', 'symbian OS',
+			'palm os', 'playstation', 'os/2', 'RISK OS', 'Nintendo', 'HP-UX', 'AIX', 'Plan 9', 'RIM OS', 'QNX', 'MorphOS', 'NetWare',
+			'SCO', 'SkyOS', 'iPhone OS', 'Haiku OS', 'DangerOS', 'Syllable',
+		]
+		user_agent = client.request.headers.get('User-Agent', '').lower()
+		for op in ops:
+			if op.lower() in user_agent:
+				return Image(self.OS.get(op, op), op)
+
+	def get_isp(self, client):
+		isps = [
+			'alicedsl.de', 'aol.com', 'einsundeins.de', 'pools.arcor-ip.net', 't-dialin.net', 't-ipconnect.de', 'vodafone.de',
+			'd1-online.com', 'superkabel.de', 'ewe-ip-backbone.de', 'pppool.de', 'hosteurope.de', 'kabelbw.de', 'ish.de', 'unitymediagroup.de',
+			'mediaways.net', 'mnet-online.de', 'netcologne.de', 'osnanet.de', 'qsc.de', 'sat-kabel-online.de', 'versanet.de', 'viaginterkom.de',
+		]
+		hostname = client.remote.name
+		for isp in isps:
+			if isp in hostname:
+				return Image(self.ISP.get(isp, isp), isp)
+
+	def get_browser(self, client):
+		browsers = [
+			'Firefox/',
+			'MSIE 10', 'MSIE 9', 'MSIE 8', 'MSIE 7', 'MSIE 6', 'MSIE 5', 'MSIE', 'Trident/7.0', 'Trident',
+			'chrome',
+			'opera',
+			'chromium',
+			'safari',
+			'lynx',
+			'links',
+			'konqueror',
+			'mozilla',
+			'w3m',
+			'seamonkey',
+			'curl',
+		]
+		user_agent = client.request.headers.get('User-Agent', '').lower()
+		for browser in browsers:
+			if browser.lower() in user_agent:
+				return Image(self.BROWSER.get(browser, browser), browser.replace('/', ''))
+
+	def get_rendering_engine(self, client):
+		engines = [
+			'Gecko',  # Mozilla, Firefox
+			'WebKit',  # Safari, Chromium, Google-Chrome
+			'Presto',  # Opera
+			'Trident',  # MS, IE
+			'KHTML',
+			'Tasman',
+			'Robin',
+			'Links',
+			'Lynx',
+		]
+		user_agent = client.request.headers.get('User-Agent', '')
+		for engine in engines:
+			if engine in user_agent:
+				return engine
 
 
 class Contact(Resource):

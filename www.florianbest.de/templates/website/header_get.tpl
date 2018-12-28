@@ -9,7 +9,10 @@
 
 	<tr py:for="var, value in infos">
 		<td>${var}</td>
-		<td>${value}</td>
+		<td>
+			<img style="height: 15px;" src="/images/SF/client/${value.image}.png" py:if="var in ('Operating System', 'Internet Service Provider', 'Browser')"/>
+			${value}
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>

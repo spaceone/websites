@@ -77,7 +77,15 @@ class Header(Resource):
 			if authorization in headers:
 				headers[authorization] = '***'
 
+		infos = [
+			('Username', client.user.username),
+			('IP-Address', client.remote.ip),
+			('Hostname', client.remote.name),
+			('Secure connection', client.server.secure),
+		]
+
 		return dict(
+			infos=infos,
 			headers=sorted(headers.items()),
 			params=dict(client.request.uri.query).items()
 		)

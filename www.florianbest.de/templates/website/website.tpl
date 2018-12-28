@@ -12,6 +12,12 @@
 	<link rel="${link.rel}" type="${link.type}" href="${link.href}" py:attrs="link.attrs"/>
 	</py:for>
 
+	<py:for each="script in scripts">
+	<script type="${script.type}" py:attrs="script.attrs">
+	<!-- genshi bug -->
+	</script>
+	</py:for>
+
 	<style py:if="inline_stylesheet">
 	<![CDATA[
 		${inline_stylesheet}

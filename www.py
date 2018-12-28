@@ -58,4 +58,4 @@ if __name__ == '__main__':
 	Server.main()
 else:
 	ServerHeader.value = 'circuits.http.wsgi/1.0 %s' % (ServerHeader,)
-	application = Application(Server, '-w', '-n')
+	application = Application(Server, '-w', '-n', '-d4')

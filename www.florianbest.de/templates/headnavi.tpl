@@ -2,7 +2,7 @@
 			<ol class="navi">
 			<py:if test="user.is_logged_in">
 				<li class="sec">
-					<h2><a href="$${user->getProfileHREF()}">[$${user->display('user_name')}]</a></h2>
+					<h2><a href="$${user->getProfileHREF()}">[${user.username}]</a></h2>
 					<ul>
 						<li class="cat"><h2>Settings:</h2></li>
 						<li class="cat"><h2><a href="/account">Account</a></h2></li>

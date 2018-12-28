@@ -41,6 +41,9 @@ span {}
 input[type=text] {
 	padding: 0 2px;
 }
+input, textarea {
+	margin: 0.1em 0;
+}
 div#content legend {
 	text-transform: uppercase;
 	padding: 5px;

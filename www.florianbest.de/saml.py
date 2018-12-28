@@ -88,6 +88,7 @@ class AssertionConsumerService(Resource):
 		# successful login
 		raise SEE_OTHER('/')
 	POST.accept('application/x-www-form-urlencoded')
+
 	@POST.codec('*/*')
 	def _post_codec(self, client):
 		return client.data

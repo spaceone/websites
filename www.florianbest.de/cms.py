@@ -5,13 +5,14 @@ from __future__ import absolute_import
 import time
 from datetime import datetime
 
-from httoop import Date, NOT_FOUND, SEE_OTHER
+from httoop import Date, NOT_FOUND, SEE_OTHER, UNPROCESSABLE_ENTITY
 
 from circuits.http.server.resource import method
 from circuits.http.utils import httphandler, is_user
 
-from .db import Column, String, Integer, DateTime, hybrid_property, SQLResource
-from .base import Resource
+from .db import Column, String, Integer, DateTime, SQLResource  # hybrid_property
+from .base import Resource, websiteproperty
+from .config import Meta, JavaScript
 from .validators import StringValidator, BoolSanitizer
 
 
@@ -43,8 +44,8 @@ class Page(Resource, SQLResource):
 	title = Column(String(256), default="", nullable=False)
 ##	other_id = Column(Integer) # The real ID of the resource, e.g. to translate it or put it into another content-type form
 ##	language = Column(String, default="", nullable=False)
-	author = Column(String(32), nullable=False) # TODO: we could join into SQLUser here but this would be a dependency on it which we (at currently state) may not want?
-	groups = Column(String, default="", nullable=False) # TODO: implement
+	author = Column(String(32), nullable=False)  # TODO: we could join into SQLUser here but this would be a dependency on it which we (at currently state) may not want?
+	groups = Column(String, default="", nullable=False)  # TODO: implement
 	creation_date = Column(DateTime, default=lambda: datetime.now(), nullable=False)
 	modify_date = Column(DateTime, default=lambda: datetime.now(), nullable=False)
 	meta_tags = Column(String(256), default="", nullable=False)
@@ -58,6 +59,19 @@ class Page(Resource, SQLResource):
 	# TODO: create an wrapper arround Column, to add also the following properties: readonly, description, label, etc.
 
 	# descriptions
+	author.label = 'Page author'
+	groups.label = 'Allowed access groups'
+	creation_date.label = 'Page creation date'
+	modify_date.label = 'Page modification date'
+	url.label = 'Page URL path'
+	title.label = 'Page title'
+	meta_tags.label = 'HTML meta tags'
+	meta_description.label = 'HTML meta description'
+	content.label = 'Page content (in HTML or Markdown)'
+	views.label = "Page visits"
+	indexed.label = 'Page indexed by robots?'
+	follow.label = 'Page followed by robots?'
+
 	author.description = 'The author of this page'
 	groups.description = 'groups which are allowed to access this page'
 	creation_date.description = 'when the page was created'
@@ -87,6 +101,8 @@ class Page(Resource, SQLResource):
 		validate_meta_description = validate_content = StringValidator()
 	validate_indexed = validate_follow = BoolSanitizer()
 
+	layout = ['url', 'title', 'author', 'groups', 'creation_date', 'modify_date', 'meta_tags', 'meta_description', 'content', 'views', 'indexed', 'follow']
+
 #	# FIXME: is not being added to __dict__
 #	@hybrid_property
 #	def indexed(self):
@@ -101,8 +117,8 @@ class Page(Resource, SQLResource):
 		columns = super(Page, self).columns
 		# add columns for the options of this page
 		columns.update(dict(
-			indexed = self.indexed,
-			follow = self.follow
+			indexed=self.indexed,
+			follow=self.follow,
 		))
 		# remove the hidden properties from our schema
 		columns.pop('options')
@@ -112,6 +128,9 @@ class Page(Resource, SQLResource):
 
 	def identify(self, client, path_segments):
 		url_ = path_segments['url']
+		client.obj = None
+		if client.request.method == 'POST' and url_ != '/':
+			return
 		for url in (url_.rstrip('/'), '%s/' % (url_.rstrip('/'),)):
 			try:
 				client.obj = super(Page, self).GET(client, url=url)
@@ -130,12 +149,29 @@ class Page(Resource, SQLResource):
 			return
 		return Date(time.mktime(client.obj.modify_date.timetuple()))
 
+	@websiteproperty
+	def website_meta(self):
+		metas = super(Page, self).website_meta
+		metas = [meta for meta in metas if meta.value not in ('keywords', 'description')]
+		metas.append(Meta('description', self.meta_description))
+		metas.append(Meta('keywords', self.meta_tags))
+		return metas
+
+	@websiteproperty
+	def website_scripts(self):
+		scripts = super(Page, self).website_scripts
+		scripts.append(JavaScript('/js/jquery-3.3.1.min.js'))
+		return scripts
+
 	@method
-	def GET(self, client, _, url, **params):
+	def GET(self, client, _, url, count=True, **params):
 		obj = super(Page, self).GET(client, url=url)
-		obj.views += 1 # increment page views for every request
+		if count:
+			obj.views += 1  # increment page views for every request
 
 		values = obj.as_dict()
+		self.meta_tags = obj.meta_tags
+		self.meta_description = obj.meta_description
 
 		# translate options
 		values['indexed'] = obj.option_enabled(Page.INDEXED)
@@ -152,8 +188,13 @@ class Page(Resource, SQLResource):
 		values.pop('id', None)
 ##		values.pop('other_id', None)
 
+		values['rel'] = {
+			'edit-form': '/pages%s/modify' % (obj.url,)
+		}
+
 		try:
-			client.domain.session.commit()
+			if count:
+				client.domain.session.commit()
 		finally:
 			return values
 	GET.codec('application/json', 0.9)
@@ -161,24 +202,47 @@ class Page(Resource, SQLResource):
 	@method
 	def PUT(self, client, _, url):
 		# remove immutable things
-		client.request.body.data.pop('views')
-		client.request.body.data.pop('creation_date')
-		client.request.body.data['author'] = client.user.username  # FIXME: only when adding otherwise keep the current value
-		client.request.body.data['modify_date'] = datetime.now()
+		data = dict(client.request.body.data)
+		if client.request.headers.get('Content-Type').startswith('application/x-www-form-urlencoded'):
+			for key, value in data.items():
+				data[key] = value.encode('latin-1', 'replace').decode('utf-8', 'replace')
+		data.pop('views')
+		data.pop('creation_date')
+		if client.request.method == 'POST':
+			data['author'] = client.user.username
+		data['modify_date'] = datetime.now()
 
 		options = Page.ENABLED
-		if client.request.body.data.pop('follow', False):
+		if data.pop('follow', False):
 			options |= Page.FOLLOW
-		if client.request.body.data.pop('indexed', False):
+		if data.pop('indexed', False):
 			options |= Page.INDEXED
-		client.request.body.data['options'] = options
+		data['options'] = options
 
+		client.request.body.data = data
 		super(Page, self).PUT(client, url=url)
 		if client.response.status == 201:
 			return _('The resource %r has successfully been created.') % url
 		return _('The resource %r has successfully been modified.') % url
 	PUT.conditions(is_user('root'))
 	PUT.codec('application/json', 0.9)
+	PUT.accept('application/json')
+	PUT.accept('application/x-www-form-urlencoded')
+
+	@method
+	def POST(self, client, _):
+		data = dict(client.request.body.data)
+		url = data['url']
+		try:
+			super(Page, self).GET(client, url=url)
+		except NOT_FOUND:
+			return self.PUT(client, _, url)
+		else:
+			raise UNPROCESSABLE_ENTITY(_('The page with the URL already exists.'))
+	POST.conditions(is_user('root'))
+	POST.codec('application/json', 0.9)
+	POST.accept('application/json')
+	POST.accept('application/x-www-form-urlencoded')
 
 	@method
 	def DELETE(self, client, _, url, **params):
@@ -199,13 +263,60 @@ class Page(Resource, SQLResource):
 			meta_tags='SF, CMS, Index',
 			meta_description='',
 			content='This is the index of the SpaceFramework CMS Module',
-			options=Page.INDEXED|Page.ENABLED|Page.FOLLOW
+			options=Page.INDEXED | Page.ENABLED | Page.FOLLOW
 		)
 		session.add(p)
 		session.commit()
 
+#	def __init__(self, *args, **kwargs):
+#		super(Page, self).__init__(self)
+#		self += Form(channel='%s-form' % (self.channel,))
+
 	def __repr__(self):
 		return '<Page title=%r url=%r (%d)>' % (self.title, self.url, len(self.content) if self.content else 0)
+
+
+class Form(Resource):
+
+	path = '/pages{url:/.*}/modify'
+
+	@websiteproperty
+	def website_scripts(self):
+		scripts = super(Form, self).website_scripts
+		scripts.append(JavaScript('/js/jquery-3.3.1.min.js'))
+		return scripts
+
+	@method
+	def GET(self, client, _, url):
+		parent = Page()
+		schema = parent.schema
+		page = parent.GET(client, _, url, count=False)
+		fields = []
+		for name in parent.layout:
+			column = schema[name]
+			type_ = 'text'
+			value = page.get(name, '')
+			content = ''
+
+			if column['type'] is bool:
+				type_ = 'checkbox'
+			elif name == 'content':
+				type_ = 'textarea'
+				content = value
+				value = ''
+
+			attrs = {'name': name, 'value': value, 'type': type_}
+			if column['readonly']:
+				attrs['readonly'] = 'readonly'
+
+			fields.append({'type': type_, 'attrs': attrs, 'value': value, 'content': content, 'label': column['label']})
+		return {
+			'page': page,
+			'schema': schema,
+			'fields': fields,
+		}
+	GET.codec('application/json', 0.9)
+	GET.conditions(is_user('root'))
 
 
 class Navigation(Resource):
@@ -213,6 +324,8 @@ class Navigation(Resource):
 
 	@method
 	def GET(self, client):
-		result = client.domain.session.query(Page.url, Page.title).all() # TODO: permission
-		return dict(navigation=dict((ipage.url, ipage.title) for ipage in result))
+		result = client.domain.session.query(Page.url, Page.title, Page.options).all()
+		# TODO: check permissions
+		result = [obj for obj in result if (obj.options & Page.ENABLED) == Page.ENABLED]
+		return dict(navigation=({'url': ipage.url, 'title': ipage.title} for ipage in result))
 	GET.codec('application/json', 0.9)

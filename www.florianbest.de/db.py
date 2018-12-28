@@ -5,11 +5,14 @@ from sqlalchemy import ForeignKey, Column, create_engine
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, String, Integer, Numeric, Text, Time, Unicode, UnicodeText, NullType, PickleType
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.orm import relationship, backref, sessionmaker
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.orm import sessionmaker  # , relationship, backref
+from sqlalchemy.orm.exc import NoResultFound
 
 from httoop import NOT_FOUND, CREATED, GONE
 Base = declarative_base()
+
+
+__all__ = ('SQLResource', 'Boolean', 'Date', 'DateTime', 'Enum', 'Float', 'String', 'Integer', 'Numeric', 'Text', 'Time', 'Unicode', 'UnicodeText', 'NullType', 'PickleType', 'ForeignKey', 'Column', 'create_engine', 'sessionmaker', 'hybrid_property', 'hybrid_method')
 
 
 def base(cls):
@@ -69,12 +72,12 @@ class SQLResource(object):
 
 	@property
 	def schema(self):
-		schema = dict()  #Schema()
+		schema = dict()  # Schema()
 		for name, column in dict(self.columns).items():
 			schema[name] = dict(
 				column=column,
 				default=getattr(column.default, 'arg', None),
-				label=getattr(column, '_label', name),
+				label=getattr(column, 'label', name),
 				description=getattr(column, 'description', ""),
 				validator=getattr(self, 'validate_%s' % name, None),
 				readonly=getattr(column, 'readonly', False),

@@ -6,10 +6,10 @@
 <ol class="navi">
 ${navigation}
 	<li class="sec"><h2><a href="/">Home</a></h2><ul>
-	<li class="cat_link"><a href="/">Home</a></li>
-	<li class="cat_link"><a href="/header">HTTP-Header</a></li>
-	<li class="cat_link"><a href="http://graffiti.florianbest.de/">Graffiti</a></li>
-	<li class="cat_link"><a href="/login">Login</a></li>
+		<li class="cat_link"><a href="/">Home</a></li>
+		<li class="cat_link"><a href="/header">HTTP-Header</a></li>
+		<li class="cat_link"><a href="http://graffiti.florianbest.de/">Graffiti</a></li>
+		<li class="cat_link"><a href="/login">Login</a></li>
 	</ul></li>
 </ol>
 <!--<hr/>-->

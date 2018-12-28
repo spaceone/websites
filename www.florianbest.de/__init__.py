@@ -7,10 +7,11 @@ from ConfigParser import ConfigParser
 
 from circuits import handler
 from circuits.http.server.resource import Domain as _Domain
+from circuits.http.server.routing import ReverseProxy
 from circuits.http.events import request
 from .website import Index, Header, Login, Logout, Contact, Favicon, HTTPError, CSPViolation
 from .robots import Robots
-from .cms import Page, Navigation
+from .cms import Page, Form, Navigation
 from .color import Color
 from .static import JavaScript, CascadeStyleSheet, Images
 from .db import create_engine, sessionmaker
@@ -31,6 +32,7 @@ class Domain(_Domain):
 		self.aliases.add(self.fqdn.replace('www.', ''))
 		self.localedir = self.config.get('i18n', 'localedir')
 		self.textdomain = self.config.get('i18n', 'textdomain')
+		self += ReverseProxy(channel=self.channel)
 
 		root = Index(channel='website-index')
 		self += root
@@ -43,6 +45,7 @@ class Domain(_Domain):
 		root += Robots(channel='website-robots')
 		root += Color(channel='website-layoutcolors')
 		root += Page(channel='website-cms-page')
+		root += Form(channel='website-cms-page-form')
 		root += JavaScript(channel='website-javascript')
 		root += CascadeStyleSheet(channel='website-css')
 		root += Images(channel='website-images')
@@ -56,7 +59,7 @@ class Domain(_Domain):
 		engine.connect()
 		self.session = sessionmaker(bind=engine)()
 
-	@handler('httperror')
+	@handler('httperror', priority=0.8)
 	def _on_httperror(self, event, client, httperror):
 		event.stop()
 		client.response.status = httperror.status

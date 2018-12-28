@@ -35,6 +35,13 @@ class CSS(Link):
 		super(CSS, self).__init__('stylesheet', 'text/css', href, **attrs)
 
 
+class JavaScript(HTML):
+
+	def __init__(self, href=None, type='text/javascript', **attrs):
+		self.attrs = {'src': href, 'type': type}
+		self.content = attrs.pop('content', None)
+
+
 def config():
 	c = ConfigParser()
 	c.read(os.path.join(os.path.dirname(__file__), 'config.cfg'))

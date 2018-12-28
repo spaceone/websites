@@ -30,6 +30,7 @@ class Index(Resource):
 			hostname=client.remote.name,
 			secure_connection=client.server.secure
 		)
+	GET.codec('application/json', 0.9)
 
 
 class HTTPError(Resource):
@@ -60,8 +61,12 @@ class HTTPError(Resource):
 	def content_type(self, client):
 		return super(HTTPError, self).content_type(client) or client.method.available_mimetypes[0]
 
-	@handler('request_success')
-	def _on_request_done(self, evt, value):
+	@handler('request_success', priority=2)
+	def _on_request_done(self, event, evt, value):
+		# TODO: understand this again
+		if event.stopped:
+			return
+		event.stop()
 		client = evt.args[0]
 		self.fire(response(client), client.server.channel)
 

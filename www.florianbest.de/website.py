@@ -83,6 +83,12 @@ class Header(Resource):
 			('Hostname', client.remote.name),
 			('Secure connection', client.server.secure),
 		]
+		# TODO: add used / free / total space, RAM, CPU usage
+		# TODO: add number of SQL queries
+		# TODO: add WSGI info
+		# TODO: add screen resolution: document.write(screen.width + 'x' + screen.height);
+		# TODO: add Country, OS, Browser, Provider (as images)
+		# TODO: add site statistics: online atm, visitor total, visitor today, visitor yesterday, online today, online total
 
 		return dict(
 			infos=infos,

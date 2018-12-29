@@ -3,24 +3,45 @@
 
 <table style="border: 1px solid #000000" py:if="headers or params">
 	<tr py:if="infos">
-		<th>name</th>
-		<th>information</th>
+		<th>Name</th>
+		<th>Information</th>
 	</tr>
 
 	<tr py:for="var, value in infos">
 		<td>${var}</td>
 		<td>
-			<img style="height: 15px;" src="/images/SF/client/${value.image}.png" py:if="var in ('Operating System', 'Internet Service Provider', 'Browser')"/>
+			<img style="height: 15px;" src="/images/${value.image}.png" title="${value}" alt="${value}" py:if="hasattr(value, 'image')"/>
 			${value}
+		</td>
+	</tr>
+	<tr>
+		<td>Screen resolution</td>
+		<td>
+			<script type="text/javascript">document.write(screen.width + 'x' + screen.height);</script>
+			<noscript>Unknown</noscript>
 		</td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>
 
+	<tr py:if="server">
+		<th>Server information</th>
+		<th></th>
+	</tr>
+
+	<tr py:for="var, value in server">
+		<td>${var}</td>
+		<td>${value}</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+
 	<tr py:if="headers">
-		<th>header name</th>
-		<th>header value</th>
+		<th>Header name</th>
+		<th>Header value</th>
 	</tr>
 
 	<tr py:for="var, value in headers">
@@ -33,8 +54,8 @@
 	</tr>
 
 	<tr py:if="params">
-		<th>querystring param name</th>
-		<th>param value</th>
+		<th>Querystring param name</th>
+		<th>Param value</th>
 	</tr>
 
 	<tr py:for="var, value in params">

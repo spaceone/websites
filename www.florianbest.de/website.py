@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import base64
 import datetime
 import smtplib
+import psutil
 from email.mime.text import MIMEText
 
 from httoop import FOUND, URI, UNAUTHORIZED
@@ -15,6 +16,7 @@ from circuits.http.events import response
 from circuits import handler
 
 from .base import Resource, _Resource
+from .ip2country import Ip2CountryResolver
 
 
 class Index(Resource):
@@ -171,6 +173,9 @@ class Header(Resource):
 		'curl': 'cURL',
 	}
 
+	def init(self, *args, **kwargs):
+		self.ip2country = Ip2CountryResolver()
+
 	@method
 	def GET(self, client):
 		headers = dict(client.request.headers.items())
@@ -181,28 +186,37 @@ class Header(Resource):
 			if key.startswith('X-Forwarded-') or key == 'Forwarded':
 				headers.pop(key)
 
+		country = self.ip2country.get_country(client.remote.ip)
 		infos = [
 			('Internet Service Provider', self.get_isp(client)),
 			('Operating System', self.get_operating_system(client)),
 			('Browser', self.get_browser(client)),
+			('Country', Image(country.country, 'country/%s' % (country.country_code,))),
+			('Language', None),  # TODO
 			('Username', client.user.username),
 			('IP-Address', client.remote.ip),
 			('Hostname', client.remote.name),
 			('Secure connection', client.server.secure),
 			('Transport protocol', client.request.uri.scheme),
-			('WSGI', None),  # TODO
-			('Language', None),  # TODO
-			('Country', None),  # TODO
 		]
 		infos = [info for info in infos if info[1] is not None]
-		# TODO: add used / free / total space, RAM, CPU usage
 		# TODO: add number of SQL queries
-		# TODO: add screen resolution: document.write(screen.width + 'x' + screen.height);
-		# TODO: add Country, OS, Browser, Provider (as images)
 		# TODO: add site statistics: online atm, visitor total, visitor today, visitor yesterday, online today, online total
+
+		memory = psutil.virtual_memory()
+		server = [
+			('WSGI', None),  # TODO
+			('CPU Usage', '%s%%' % (psutil.cpu_percent(),)),
+			('RAM Usage', '%s%%' % (memory.percent,)),
+			('RAM Total', '%s MiB' % (memory.total / 1024 / 1024,)),
+			('RAM Used', '%s MiB' % (memory.used / 1024 / 1024,)),
+			('RAM Free', '%s MiB' % (memory.free / 1024 / 1024,)),
+		]
+		server = [info for info in server if info[1] is not None]
 
 		return dict(
 			infos=infos,
+			server=server,
 			headers=sorted(headers.items()),
 			params=dict(client.request.uri.query).items()
 		)
@@ -219,7 +233,7 @@ class Header(Resource):
 		user_agent = client.request.headers.get('User-Agent', '').lower()
 		for op in ops:
 			if op.lower() in user_agent:
-				return Image(self.OS.get(op, op), op)
+				return Image(self.OS.get(op, op), 'client/%s' % op)
 
 	def get_isp(self, client):
 		isps = [
@@ -230,7 +244,7 @@ class Header(Resource):
 		hostname = client.remote.name
 		for isp in isps:
 			if isp in hostname:
-				return Image(self.ISP.get(isp, isp), isp)
+				return Image(self.ISP.get(isp, isp), 'client/%s' % isp)
 
 	def get_browser(self, client):
 		browsers = [
@@ -251,7 +265,7 @@ class Header(Resource):
 		user_agent = client.request.headers.get('User-Agent', '').lower()
 		for browser in browsers:
 			if browser.lower() in user_agent:
-				return Image(self.BROWSER.get(browser, browser), browser.replace('/', ''))
+				return Image(self.BROWSER.get(browser, browser), 'client/%s' % browser.replace('/', ''))
 
 	def get_rendering_engine(self, client):
 		engines = [

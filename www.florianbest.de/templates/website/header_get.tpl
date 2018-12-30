@@ -7,11 +7,13 @@
 		<th>Information</th>
 	</tr>
 
-	<tr py:for="var, value in infos">
+	<tr py:for="var, val in infos">
 		<td>${var}</td>
 		<td>
-			<img style="height: 15px;" src="/images/${value.image}.png" title="${value}" alt="${value}" py:if="hasattr(value, 'image')"/>
-			${value}
+			<py:for each="value in (val if isinstance(val, list) else [val])">
+				<img style="height: 15px;" src="/images/${value.image}.png" title="${value}" alt="${value}" py:if="hasattr(value, 'image')"/>
+				${value}
+			</py:for>
 		</td>
 	</tr>
 	<tr>
@@ -21,20 +23,6 @@
 			<noscript>Unknown</noscript>
 		</td>
 	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-
-	<tr py:if="server">
-		<th>Server information</th>
-		<th></th>
-	</tr>
-
-	<tr py:for="var, value in server">
-		<td>${var}</td>
-		<td>${value}</td>
-	</tr>
-
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>
@@ -59,6 +47,20 @@
 	</tr>
 
 	<tr py:for="var, value in params">
+		<td>${var}</td>
+		<td>${value}</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+
+	<tr py:if="server">
+		<th>Server information</th>
+		<th></th>
+	</tr>
+
+	<tr py:for="var, value in server">
 		<td>${var}</td>
 		<td>${value}</td>
 	</tr>

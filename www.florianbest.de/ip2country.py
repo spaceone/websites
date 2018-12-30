@@ -57,6 +57,7 @@ class Ip2CountryResolver(object):
 			return Ip2Country(country='Unknown', country_code='0')
 
 	def install(self):
+		"""Download from https://dev.maxmind.com/geoip/legacy/geolite/"""
 		import csv
 		session = self.session
 		engine = session.engine

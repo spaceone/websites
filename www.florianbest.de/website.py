@@ -73,17 +73,13 @@ class HTTPError(Resource):
 		self.fire(response(client), client.server.channel)
 
 
-class Image(object):
+def image(string, image):
+	class String(unicode):
+		pass
 
-	def __init__(self, string, image):
-		self.image = image
-		self.string = string
-
-	def __str__(self):
-		return self.string
-
-	def __unicode__(self):
-		return unicode(str(self))
+	string = String(string)
+	string.image = image
+	return string
 
 
 class Header(Resource):
@@ -191,15 +187,15 @@ class Header(Resource):
 			('Internet Service Provider', self.get_isp(client)),
 			('Operating System', self.get_operating_system(client)),
 			('Browser', self.get_browser(client)),
-			('Country', Image(country.country, 'country/%s' % (country.country_code,))),
-			('Language', None),  # TODO
+			('Country', image(country.country, 'country/%s' % (country.country_code,))),
+			('Language', [image(lang.value, 'country/%s' % lang.value.split('-')[-1]) for lang in client.request.headers.elements('Accept-Language') if '-' in lang.value]),
 			('Username', client.user.username),
 			('IP-Address', client.remote.ip),
 			('Hostname', client.remote.name),
 			('Secure connection', client.server.secure),
 			('Transport protocol', client.request.uri.scheme),
 		]
-		infos = [info for info in infos if info[1] is not None]
+		infos = [info for info in infos if info[1]]
 		# TODO: add number of SQL queries
 		# TODO: add site statistics: online atm, visitor total, visitor today, visitor yesterday, online today, online total
 
@@ -212,7 +208,7 @@ class Header(Resource):
 			('RAM Used', '%s MiB' % (memory.used / 1024 / 1024,)),
 			('RAM Free', '%s MiB' % (memory.free / 1024 / 1024,)),
 		]
-		server = [info for info in server if info[1] is not None]
+		server = [info for info in server if info[1]]
 
 		return dict(
 			infos=infos,
@@ -233,7 +229,7 @@ class Header(Resource):
 		user_agent = client.request.headers.get('User-Agent', '').lower()
 		for op in ops:
 			if op.lower() in user_agent:
-				return Image(self.OS.get(op, op), 'client/%s' % op)
+				return image(self.OS.get(op, op), 'client/%s' % op)
 
 	def get_isp(self, client):
 		isps = [
@@ -244,7 +240,7 @@ class Header(Resource):
 		hostname = client.remote.name
 		for isp in isps:
 			if isp in hostname:
-				return Image(self.ISP.get(isp, isp), 'client/%s' % isp)
+				return image(self.ISP.get(isp, isp), 'client/%s' % isp)
 
 	def get_browser(self, client):
 		browsers = [
@@ -265,7 +261,7 @@ class Header(Resource):
 		user_agent = client.request.headers.get('User-Agent', '').lower()
 		for browser in browsers:
 			if browser.lower() in user_agent:
-				return Image(self.BROWSER.get(browser, browser), 'client/%s' % browser.replace('/', ''))
+				return image(self.BROWSER.get(browser, browser), 'client/%s' % browser.replace('/', ''))
 
 	def get_rendering_engine(self, client):
 		engines = [

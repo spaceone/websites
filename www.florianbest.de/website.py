@@ -96,6 +96,7 @@ class Header(Resource):
 		'vodafone.de': 'Vodafone',
 		'd1-online.com': 'T-Mobile',
 		'superkabel.de': 'Kabel Deutschland',
+		'kabel-deutschland.de': 'Kabel Deutschland',
 		'ewe-ip-backbone.de': 'EWE TEL',
 		'pppool.de': 'Freenet',
 		'hosteurope.de': 'Host Europe',
@@ -233,7 +234,7 @@ class Header(Resource):
 
 	def get_isp(self, client):
 		isps = [
-			'alicedsl.de', 'aol.com', 'einsundeins.de', 'pools.arcor-ip.net', 't-dialin.net', 't-ipconnect.de', 'vodafone.de',
+			'alicedsl.de', 'aol.com', 'einsundeins.de', 'pools.arcor-ip.net', 't-dialin.net', 't-ipconnect.de', 'vodafone.de', 'kabel-deutschland.de',
 			'd1-online.com', 'superkabel.de', 'ewe-ip-backbone.de', 'pppool.de', 'hosteurope.de', 'kabelbw.de', 'ish.de', 'unitymediagroup.de',
 			'mediaways.net', 'mnet-online.de', 'netcologne.de', 'osnanet.de', 'qsc.de', 'sat-kabel-online.de', 'versanet.de', 'viaginterkom.de',
 		]

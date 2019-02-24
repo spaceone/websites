@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import os
 
 from circuits.http.server.resource import Domain as _Domain
+from circuits.http.server.routing import ReverseProxy
 
 from .website import Graffiti, Kunstwerke, Images, Workshopangebot, Zeitungsartikel, Kontakt, Robots
 
@@ -13,6 +14,7 @@ class Domain(_Domain):
 
 	def __init__(self, *args, **kwargs):
 		super(Domain, self).__init__(*args, **kwargs)
+		self += ReverseProxy(channel=self.channel)
 
 		self.www_path = os.path.realpath(os.path.dirname(__file__))
 		self.template_path = os.path.join(self.www_path, 'templates')

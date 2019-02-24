@@ -163,6 +163,8 @@ class Resource(_Resource):
 		module = type(self).__module__.split('.', 1)[0]
 		source = sys.modules[type(self).__module__].__file__.split(module, 1)[-1]
 		source = '%s%s' % (module.replace('_', '.'), source)
+		if source.endswith('.pyc') or source.endswith('.pyo'):
+			source = source[:-1]
 		tplvars = dict(
 			content=unicode(client.response.body),
 			user=client.user,

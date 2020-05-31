@@ -18,6 +18,11 @@ from circuits import handler
 from .base import Resource, _Resource
 from .ip2country import Ip2CountryResolver
 
+try:
+	unicode
+except NameError:
+	unicode = str
+
 
 class Index(Resource):
 	"""This resource is an example index page for the webserver."""
@@ -179,7 +184,7 @@ class Header(Resource):
 		for authorization in ('Cookie', 'Authorization', 'Proxy-Authorization'):
 			if authorization in headers:
 				headers[authorization] = '***'
-		for key in headers.keys():
+		for key in list(headers.keys()):
 			if key.startswith('X-Forwarded-') or key == 'Forwarded':
 				headers.pop(key)
 
@@ -388,7 +393,7 @@ class Favicon(_Resource):
 	@method
 	def GET(self, client, color='white'):
 		data = b'AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAA'\
-			'BAAAAAAAAAAAAAAAAAAA\nAAAAAAD/////AAAAAA=='
+			b'BAAAAAAAAAAAAAAAAAAA\nAAAAAAD/////AAAAAA=='
 		data = base64.decodestring(data)
 		data = list(data)
 		if color == 'green':
@@ -418,4 +423,4 @@ class CSPViolation(_Resource):
 
 	@method
 	def POST(self, client):
-		print client.request.body
+		print(client.request.body)

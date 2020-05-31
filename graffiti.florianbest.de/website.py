@@ -10,6 +10,11 @@ from httoop.status import UNPROCESSABLE_ENTITY
 
 from .base import Resource
 
+try:
+	unicode
+except NameError:
+	unicode = str
+
 
 class Graffiti(Resource):
 

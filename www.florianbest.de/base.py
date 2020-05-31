@@ -17,6 +17,11 @@ from circuits.http.server.i18n.content_language import ContentLanguage
 
 from .config import config
 
+try:
+	unicode
+except NameError:
+	unicode = str
+
 
 class websiteproperty(property):
 
@@ -68,13 +73,16 @@ class _Resource(GettextResource, BaseResource):
 		kwargs = super(_Resource, self).keyword_arguments(client)
 		argspec = inspect.getargspec(client.method.method)
 		if '_' in argspec.args:
-			kwargs['_'] = client.translation.ugettext
+			try:
+				kwargs['_'] = client.translation.ugettext
+			except AttributeError:  # Python 3
+				kwargs['_'] = client.translation.gettext
 		if argspec.keywords:
 			kw = dict(client.request.uri.query)
 			kw.update(kwargs)
 			kwargs = kw
 
-		for name, value in client.path_segments.iteritems():
+		for name, value in client.path_segments.items():
 			if name in argspec.args:
 				kwargs[name] = value
 

@@ -111,12 +111,12 @@ class SQLResource(object):
 		except NoResultFound:
 			exists = False
 			obj = self.__class__(**client.request.body.data)  # FIXME
-			for key, value in client.request.body.data.iteritems():
+			for key, value in client.request.body.data.items():
 				setattr(obj, key, value)
 			session.add(obj)
 		else:
 			exists = True
-			for key, value in client.request.body.data.iteritems():
+			for key, value in client.request.body.data.items():
 				setattr(obj, key, value)
 
 		try:
@@ -148,7 +148,7 @@ class SQLResource(object):
 
 	def OPTIONS(self, client, **params):
 		schema = dict()
-		for name, value in self.schema.iteritems():
+		for name, value in self.schema.items():
 			schema[name] = dict(
 				default=value['default'],
 				label=value['label'].title(),

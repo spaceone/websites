@@ -33,7 +33,7 @@ class Color(Resource):
 		template_path = os.path.join(client.domain.template_path, '%s/' % __name__)
 		try:
 			tpl = self.load(template_path).load('color_get.tpl', cls=NewTextTemplate)
-		except:
+		except Exception:
 			raise ValueError(template_path)
 		return tpl.generate(**client.data).render()  # doctype='html5'
 

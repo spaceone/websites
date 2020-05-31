@@ -53,7 +53,7 @@ class Ip2CountryResolver(object):
 		ip = struct.unpack("!I", socket.inet_aton(addr))[0]
 		try:
 			return self.session.query(Ip2Country).filter((Ip2Country.start_ip <= ip) & (Ip2Country.end_ip >= ip)).one()
-		except:
+		except Exception:
 			return Ip2Country(country='Unknown', country_code='0')
 
 	def install(self):

@@ -82,7 +82,7 @@ class AssertionConsumerService(Resource):
 			raise TEMPORARY_REDIRECT('/saml/acs/')
 
 		SESSION['SAML'] = response
-		print '#### RECEIVED the following attributes!!!!', response
+		print('#### RECEIVED the following attributes!!!!', response)
 		# TODO: set cookie
 
 		# successful login

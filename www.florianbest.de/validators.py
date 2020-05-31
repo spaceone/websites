@@ -3,6 +3,13 @@
 import re
 import copy
 
+try:
+	unicode
+except NameError:
+	unicode = str
+	basestring = (bytes, str)
+	long = int
+
 
 class SanitizeError(ValueError):
 	pass
@@ -101,7 +108,7 @@ class DictSanitizer(Sanitizer):
 		altered_value = copy.deepcopy(value)
 
 		errors = []
-		for attr, sanitizer in self.sanitizers.iteritems():
+		for attr, sanitizer in self.sanitizers.items():
 			try:
 				altered_value[attr] = sanitizer.sanitize(value.get(attr))
 			except SanitizeError as e:
@@ -206,8 +213,8 @@ class IntSanitizer(IntValidator):
 			if not isinstance(value, int):
 				raise ValueError
 			return value
-		except:
-			raise SanitizeError
+		except Exception:
+			raise SanitizeError()
 
 
 class FloatValidator(Sanitizer):
@@ -227,8 +234,8 @@ class FloatSanitizer(FloatValidator):
 	def _sanitize(self, value, name):
 		try:
 			return long(value)
-		except:
-			raise SanitizeError
+		except Exception:
+			raise SanitizeError()
 
 
 class BoolValidator(Sanitizer):

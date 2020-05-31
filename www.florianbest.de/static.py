@@ -8,14 +8,14 @@ from circuits.http.server.resource import StaticResource
 
 
 class JavaScript(StaticResource):
-	path = '/js/{path:.*\.js}'
+	path = r'/js/{path:.*\.js}'
 
 	def directory(self, client):
 		return os.path.join(client.domain.static_path, 'js/')
 
 
 class CascadeStyleSheet(StaticResource):
-	path = '/css/{path:.*\.css}'
+	path = r'/css/{path:.*\.css}'
 
 	def directory(self, client):
 		return os.path.join(client.domain.static_path, 'css/')

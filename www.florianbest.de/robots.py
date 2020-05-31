@@ -18,7 +18,7 @@ class Robots(_Resource):
 	@method
 	def GET(self, client, _, **params):
 		robots = self.group_by_value(getattr(client.domain, 'robots', {}))
-		return bytes(RobotEntries([RobotEntry(agents, *rules) for agents, rules in robots.iteritems()]))
+		return bytes(RobotEntries([RobotEntry(agents, *rules) for agents, rules in robots.items()]))
 	GET.codec('text/plain', charset='utf-8')
 
 	# TODO: move into RobotEntries.__str__

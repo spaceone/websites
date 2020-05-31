@@ -2,12 +2,18 @@
 
 import importlib
 from pprint import pprint
-from ConfigParser import ConfigParser, NoSectionError
+
+from six.moves.configparser import ConfigParser, NoSectionError
 
 from httoop import ServerHeader
 from circuits import handler
 from circuits.http.server.__main__ import HTTPServer
 from circuits.http.server.wsgi import Application
+
+try:
+	unicode
+except NameError:
+	unicode = str
 
 
 class Server(HTTPServer):
@@ -35,7 +41,7 @@ class Server(HTTPServer):
 
 	def add_domains(self):
 		try:
-			domains = self.config.get('general', 'domains', '').split(',')
+			domains = self.config.get('general', 'domains').split(',')
 		except NoSectionError:
 			return
 		for domain in domains:

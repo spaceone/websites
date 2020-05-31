@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 
 import os
-from ConfigParser import ConfigParser
+from six.moves.configparser import ConfigParser
 
 from circuits import handler
 from circuits.http.server.resource import Domain as _Domain

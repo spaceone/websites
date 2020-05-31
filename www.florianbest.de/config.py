@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ConfigParser import ConfigParser
+from six.moves.configparser import ConfigParser
 import os.path
 import ast
 
@@ -51,7 +51,7 @@ def config():
 
 	links = dict((x, ast.literal_eval(y.replace('$', '%'))) for x, y in c.items('website_links'))
 	config['links'] = []
-	config['links'] += [Link(**dict((y, z % config) for y, z in x.iteritems())) for x in links.get('links', [])]
+	config['links'] += [Link(**dict((y, z % config) for y, z in x.items())) for x in links.get('links', [])]
 	config['links'] += [CSS(x % config) for x in links['stylesheet']]
 	config['links'] += [Link('icon', links['icon_type'], x % config) for x in links['icon']]
 #	import pdb; pdb.set_trace()

@@ -11,6 +11,11 @@ from circuits.http.utils import httphandler
 from genshi.template import TemplateLoader, TemplateNotFound, TemplateSyntaxError
 #from genshi.filters import Translator
 
+try:
+	unicode
+except NameError:
+	unicode = str
+
 
 class websiteproperty(property):
 

@@ -20,7 +20,7 @@ hr {
 	margin: 5px auto;
 	border: none;
 	background-color: #1c1c1c;
-/*BORDER COLOR IN color.css*/
+	border-bottom: thin solid var(--design-dark) !important;
 	/*border-top: thin solid #CCCCCC;*/
 }
 hr.right {
@@ -43,6 +43,7 @@ input[type=text] {
 }
 input, textarea {
 	margin: 0.1em 0;
+	background-color: var(--design-dark);
 }
 div#content legend {
 	text-transform: uppercase;
@@ -81,6 +82,10 @@ div#content fieldset {
 }
 fieldset.login, fieldset.login input {
 	border:none!important;
+}
+fieldset,
+fieldset legend {
+	border: thin solid var(--design-light);
 }
 
 h1 {
@@ -202,7 +207,8 @@ div#footer a.last:after {
 div.navigation > ol.navi h2:first-letter,
 div.pb_content > p:first-letter,
 div#content > p:first-letter { 
-	font-weight: bold; font-size: 20px; 
+	font-weight: bold;
+	font-size: 20px;
 }
 div.pb_content > p:hover,
 div#content > p:hover { 
@@ -224,4 +230,22 @@ div#content li > ul > li {
 div#content p {
 	padding-left: 5px;
 	padding-right: 5px;
+}
+#content hr {
+	background-color: var(--design-dark);
+}
+.color {
+	color: var(--design-dark);
+}
+a,
+a.backbutton,
+div#profile a,
+div#copyright a,
+div#details a,
+div#footer,
+div#content a,
+div#content a:visited,
+div#content a:active,
+div#content a:hover {
+	color: var(--design-light);
 }

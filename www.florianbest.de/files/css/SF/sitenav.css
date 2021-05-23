@@ -5,6 +5,7 @@ div.sitenav {
 	width: 160px;
 	height: 100%;
 	border: medium double #131313;
+	background-color: var(--design-dark);
 }
 #sitenav {
 	position:fixed;
@@ -24,8 +25,8 @@ div.sitenav {
 	padding:0;
 	height:16px;
 }
-#sitenav a:link, 
-#sitenav a:visited, 
+#sitenav a:link,
+#sitenav a:visited,
 #sitenav a:active {
 	visibility: visible;
 	padding:0;
@@ -34,15 +35,18 @@ div.sitenav {
 	visibility: visible;
 	cursor: help;
 }
-#sitenav a:hover span, 
+#sitenav a:hover span,
 #sitenav a span:hover {
-	visibility: visible; 
+	visibility: visible;
 	background: #131313;
 }
+#sitenav a:hover span {
+	border: thin solid var(--design-light);
+}
 #sitenav a span {
-	visibility: hidden; 
-	position: absolute; 
-	left: 25px; 
+	visibility: hidden;
+	position: absolute;
+	left: 25px;
 	width:auto;
 	height:auto;
 	text-decoration: none;

@@ -115,3 +115,26 @@ div.navigation > ol.navi > li.sec > ul > li.cat > ul > li.subcat:hover > a:after
 div.navigation > ol.navi > li > ul > li:hover > ul {
 	border-right: thin solid #8B0000;
 }
+
+div.navigation > ol.navi > li.sec > ul > li.cat:target > ul {
+	border: thin solid var(--design-dark);
+	border-right: thin solid var(--design-light);
+}
+div.navigation > ol.navi > li.sec > ul > li.cat:target {
+	background-color: var(--design-light);
+}
+div.navigation > ol.navi > li.sec > ul > li.cat:hover > ul {
+	border: thin solid var(--design-light);
+	border-right: thin solid var(--design-dark);
+}
+
+div.navigation > ol.navi > li.sec > ul > li.cat:hover {
+	background-color: var(--design-dark);
+}
+
+div.navigation a:hover {
+	color: var(--design-light);
+}
+div.navigation hr {
+	background-color: var(--design-dark);
+}

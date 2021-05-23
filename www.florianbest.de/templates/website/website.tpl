@@ -36,7 +36,7 @@
 			</py:with>
 			<div id="middle" style="/*margin: 0 20px; background-color: #1C1C1C;*/">
 				<xi:include href="../shell.tpl" />
-				<div id="content" class="inhalt">
+				<div id="content">
 					<xi:include py:if="False" href="../errors.tpl" />
 					${HTML(content)}
 				</div>

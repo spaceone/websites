@@ -4,10 +4,10 @@ html, body {
     background: url('/images/SF/space/bg.gif') repeat !important;
 }
 div#margin {
-	background: transparent /*url('/images/SF/space/shadowleft.png') repeat-y 10px 0*/; 
+	/*background: transparent /*url('/images/SF/space/shadowleft.png') repeat-y 10px 0*//*;*/
 }
 div#design {
-	background:#1c1c1c url('/images/SF/space/main.png') repeat-y;
+	background: #1c1c1c url('/images/SF/space/main.png') repeat-y;
 }
 
 div#profile {
@@ -30,15 +30,16 @@ div#logo span {
 	position: relative;
 	bottom: -80%;
 	left: 30%;
+	background-color: var(--design-light);
 }
 div#headnavi {
-	background:#181818 url('/images/SF/space/headnavi.png') repeat-x;
+	background: #181818 url('/images/SF/space/headnavi.png') repeat-x;
 }
 div#details {
 	background: #171817 url('/images/SF/space/details.png') repeat scroll;
 }
 div#body {
-	background:#1c1c1c url('/images/SF/space/main.png') repeat-y;
+	background: #1c1c1c url('/images/SF/space/main.png') repeat-y;
 }
 div#body div#left {
 }
@@ -47,8 +48,8 @@ div#body div#right {
 div#body div#content {
 }
 div#copyright {
-	background:#181818 url('/images/SF/space/copyright.png') no-repeat;
+	background: #181818 url('/images/SF/space/copyright.png') no-repeat;
 }
 div#footer {
-	background:#181818 url('/images/SF/space/footer.png');
+	background: #181818 url('/images/SF/space/footer.png');
 }

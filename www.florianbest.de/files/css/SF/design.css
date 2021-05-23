@@ -21,6 +21,8 @@ div#margin {
 /*	border: 2px solid #8B0000;*/
 	padding: 2px; /*wichtiger innenabstand*/
 	height:auto !important; /* Important Regel für moderne Browser */
+	background-color: var(--border-light);
+	border: thin solid var(--border-dark);
 }
 div#profile {
 /*	width: 100%;*/
@@ -28,6 +30,7 @@ div#profile {
 	overflow: hidden;
 	padding-left: 5px;
 	padding-right: 5px;
+	border-top: thin groove var(--design-dark);
 }
 div#logo {
 /*	width: 100%;*/
@@ -35,6 +38,7 @@ div#logo {
 	line-height: 15px;
 	padding: 5px;
 	overflow: hidden;
+	border-top: thin groove var(--design-dark);
 }
 div#headnavi {
 	/*width: 100%;*/
@@ -56,6 +60,7 @@ div#body {
 /*	height: 100%;*/
 	height: auto;
 	display: table; /* DOES NOT WORK IN IE < 8, FIXING WITH EXTERN CSS!*/
+	border-top: thin groove var(--design-dark);
 }
 div#left {
 	display: table-cell; /* DOES NOT WORK IN IE < 8, FIXING WITH EXTERN CSS!*/
@@ -123,6 +128,7 @@ div#footer {
 	vertical-align: middle;
 	text-align: center;
 	line-height: 20px;
+	/*border-top: thin groove var(--design-dark);*/
 }
 .top {
 	vertical-align: top;

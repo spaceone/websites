@@ -161,10 +161,36 @@ div#headnavi > ol.navi > li.sec > ul > li.cat > ul > li > a {
 }
 
 div#headnavi > ol.navi > li.sec > ul > li.cat:after {
-    content: url('/images/SF/space/SF/space/arrow.gif');
-    vertical-align: middle;
+	content: url('/images/SF/space/SF/space/arrow.gif');
+	vertical-align: middle;
 	position: absolute;
 	right:1px;
 	width:7px;
-    height: 15px;
-} 
+	height: 15px;
+}
+
+ol.navi h2 > a:first-letter,
+div#headnavi > ol.navi > li.sec > ul > li:hover > a,
+div#headnavi > ol.navi > li.sec > ul > li > ul li:hover > a,
+div#headnavi * a:hover,
+div#headnavi > ol.navi > li.sec > h2 > a:first-letter,
+div#headnavi > ol.navi > li.sec > h2:hover {
+	color: var(--design-dark) !important;
+}
+
+div#headnavi > ol.navi > li > ul,
+div#headnavi > ol.navi > li > ul > li > ul {
+	border: thin solid var(--design-dark);
+}
+div#headnavi > ol.navi > li > ul > li.sub:after {
+	background-color: var(--border-light);
+}
+div#headnavi > ol.navi > li > ul > li > ul > li {
+	border-top: thin solid var(--design-light);
+	border-bottom: thin solid var(--design-dark);
+	border-left: thin solid #1c1c1c;
+	border-right: thin solid #131313;
+}
+div#headnavi > ol.navi > li > ul > li.sub:hover:after {
+	background-color: var(--design-dark);
+}

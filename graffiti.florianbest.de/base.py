@@ -65,7 +65,7 @@ class Resource(_Resource):
 
     @websiteproperty
     def website_base(self):
-        return 'http://%s/' % self.parent.fqdn
+        return '//%s/' % self.parent.fqdn
 
     @websiteproperty
     def website_meta(self):

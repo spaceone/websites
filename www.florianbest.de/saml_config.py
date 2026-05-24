@@ -30,9 +30,9 @@ CONFIG = {
             'optional_attributes': ['objectClass', 'description', 'uidNumber', 'gidNumber', 'userPassword', 'displayName', 'cn', 'loginShell'],
         },
     },
-    'attribute_map_dir': '/usr/lib/python2.7/dist-packages/saml2/attributemaps/',
-    'key_file': '/etc/letsencrypt/live/www.florianbest.de/privkey.pem',
-    'cert_file': '/etc/letsencrypt/live/www.florianbest.de/cert.pem',
+    'attribute_map_dir': '/usr/lib/python3/dist-packages/saml2/attributemaps/',
+    'key_file': '/etc/letsencrypt/live/florianbest.de/privkey.pem',
+    'cert_file': '/etc/letsencrypt/live/florianbest.de/cert.pem',
     'xmlsec_binary': '/usr/bin/xmlsec1',
     'metadata': {
         'local': glob.glob(os.path.join(os.path.dirname(__file__), 'idp_*.xml')),

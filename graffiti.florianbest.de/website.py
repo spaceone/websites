@@ -344,8 +344,9 @@ class Kontakt(Resource):
         receiver = base64.b64decode('Z3JhZmZpdGlAZmxvcmlhbmJlc3QuZGU=').decode()
         data = {}
         for key, val in dict(client.request.body.data).items():
-            if isinstance(val, str):
-                val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
+            if isinstance(val, bytes):
+                # val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
+                val = val.decode('utf-8', 'replace')
             data[key] = val
         data.setdefault('copy', False)
         copy = data['copy'] == 'on'
@@ -396,7 +397,7 @@ Message: %s
         connection = smtplib.SMTP('localhost')
         connection.sendmail(sender, [receiver], message.as_string())
         connection.quit()
-        return 'Vielen Dank für die E-Mail! Ich werde sobald wie möglich antworten.'
+        return 'Vielen Dank für die E-Mail! Ich werde sobald wie möglich antworten.'.encode('utf-8')
 
     POST.accept('application/x-www-form-urlencoded')
     POST.codec('text/html')

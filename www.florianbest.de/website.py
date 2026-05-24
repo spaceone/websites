@@ -27,6 +27,9 @@ class Index(Resource):
 
     GET.codec('application/json', 0.9)
 
+    def website_meta_description(self):
+        return 'Willkommen!'
+
 
 class HTTPError(Resource):
     default_features = [ContentType, Security]
@@ -170,7 +173,7 @@ class Header(Resource):
 
     @method
     def GET(self, client):
-        headers = dict(client.request.headers.items())
+        headers = dict((key, client.request.headers[key]) for key in client.request.headers)
         for authorization in ('Cookie', 'Authorization', 'Proxy-Authorization'):
             if authorization in headers:
                 headers[authorization] = '***'
@@ -206,7 +209,12 @@ class Header(Resource):
         ]
         server = [info for info in server if info[1]]
 
-        return {'infos': infos, 'server': server, 'headers': sorted(headers.items()), 'params': dict(client.request.uri.query).items()}
+        return {
+            'infos': infos,
+            'server': server,
+            'headers': sorted(headers.items()),
+            'params': sorted(dict(client.request.uri.query).items()),
+        }
 
     GET.codec('application/json', 0.9)
 
@@ -343,6 +351,8 @@ class Header(Resource):
             if engine in user_agent:
                 return engine
 
+    website_meta_description = 'Auflistung, der mitgesendeten Daten (Browser, Betriebssystem, Internet-Service-Provider, HTTP-Header)'
+
 
 class Contact(Resource):
     path = '/contact/'
@@ -414,6 +424,7 @@ Message: %s
         connection.quit()
 
     POST.accept('application/x-www-form-urlencoded')
+    # POST.accept('multipart/form-data')
 
 
 # TODO: JSLoginForm

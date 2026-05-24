@@ -41,8 +41,8 @@ class Page(Resource, SQLResource):
     id = Column(Integer, primary_key=True, autoincrement=True)
     url = Column(String(256), nullable=False, unique=True)
     title = Column(String(256), default='', nullable=False)
-    ##	other_id = Column(Integer) # The real ID of the resource, e.g. to translate it or put it into another content-type form
-    ##	language = Column(String, default="", nullable=False)
+    # other_id = Column(Integer) # The real ID of the resource, e.g. to translate it or put it into another content-type form
+    # language = Column(String, default="", nullable=False)
     author = Column(String(32), nullable=False)  # TODO: we could join into SQLUser here but this would be a dependency on it which we (at currently state) may not want?
     groups = Column(String, default='', nullable=False)  # TODO: implement
     creation_date = Column(DateTime, default=lambda: datetime.now(), nullable=False)
@@ -92,7 +92,7 @@ class Page(Resource, SQLResource):
     modify_date.readonly = True
     views.readonly = True
     id.readonly = True
-    ##	other_id.readonly = True
+    # other_id.readonly = True
     options.readonly = True
 
     # sanitizer
@@ -125,7 +125,7 @@ class Page(Resource, SQLResource):
         # remove the hidden properties from our schema
         columns.pop('options')
         columns.pop('id')
-        ##		columns.pop('other_id')
+        # columns.pop('other_id')
         return columns
 
     def identify(self, client, path_segments):
@@ -189,7 +189,7 @@ class Page(Resource, SQLResource):
         # remvove hidden properties # TODO: make this generic
         values.pop('options', None)
         values.pop('id', None)
-        ##		values.pop('other_id', None)
+        # values.pop('other_id', None)
 
         values['rel'] = {'edit-form': '/pages%s/modify' % (obj.url,)}
 

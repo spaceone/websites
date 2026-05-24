@@ -392,8 +392,7 @@ class Favicon(_Resource):
 
 	@method
 	def GET(self, client, color='white'):
-		data = b'AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAA'\
-			b'BAAAAAAAAAAAAAAAAAAA\nAAAAAAD/////AAAAAA=='
+		data = b'AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAD/////AAAAAA=='
 		data = base64.decodestring(data)
 		data = list(data)
 		if color == 'green':

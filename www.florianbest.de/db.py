@@ -96,17 +96,17 @@ class SQLResource(object):
 
     @property
     def schema(self):
-        schema = dict()  # Schema()
+        schema = {}  # Schema()
         for name, column in dict(self.columns).items():
-            schema[name] = dict(
-                column=column,
-                default=getattr(column.default, 'arg', None),
-                label=getattr(column, 'label', name),
-                description=getattr(column, 'description', ''),
-                validator=getattr(self, 'validate_%s' % name, None),
-                readonly=getattr(column, 'readonly', False),
-                type=column.type.python_type,
-            )
+            schema[name] = {
+                'column': column,
+                'default': getattr(column.default, 'arg', None),
+                'label': getattr(column, 'label', name),
+                'description': getattr(column, 'description', ''),
+                'validator': getattr(self, 'validate_%s' % name, None),
+                'readonly': getattr(column, 'readonly', False),
+                'type': column.type.python_type,
+            }
             if hasattr(schema[name]['default'], '__call__'):
                 schema[name]['default'] = str(schema[name]['default'](None))
         return schema
@@ -170,7 +170,7 @@ class SQLResource(object):
     # A POST request is allowed here to add, modify or delete a resource????
 
     def OPTIONS(self, client, **params):
-        schema = dict()
+        schema = {}
         for name, value in self.schema.items():
-            schema[name] = dict(default=value['default'], label=value['label'].title(), description=value['description'], readonly=value['readonly'], type=value['type'].__name__)
+            schema[name] = {'default': value['default'], 'label': value['label'].title(), 'description': value['description'], 'readonly': value['readonly'], 'type': value['type'].__name__}
         return schema

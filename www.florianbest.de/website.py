@@ -31,7 +31,7 @@ class Index(Resource):
 
     @method
     def GET(self, client, _):
-        return dict(content=_('Hello World!'), username=client.user.username, ip=client.remote.ip, hostname=client.remote.name, secure_connection=client.server.secure)
+        return {'content': _('Hello World!'), 'username': client.user.username, 'ip': client.remote.ip, 'hostname': client.remote.name, 'secure_connection': client.server.secure}
 
     GET.codec('application/json', 0.9)
 
@@ -214,7 +214,7 @@ class Header(Resource):
         ]
         server = [info for info in server if info[1]]
 
-        return dict(infos=infos, server=server, headers=sorted(headers.items()), params=dict(client.request.uri.query).items())
+        return {'infos': infos, 'server': server, 'headers': sorted(headers.items()), 'params': dict(client.request.uri.query).items()}
 
     GET.codec('application/json', 0.9)
 
@@ -455,7 +455,7 @@ class Logout(Resource):
     @method
     def GET(self, client, _):
         if client.user.is_guest:
-            return dict(content=_('You are already logged out ;)'))
+            return {'content': _('You are already logged out ;)')}
         location = URI(client.request.uri)
         location.username = 'logout'
         location.path = '/'  # FIXME: chromium bug client.request.uri.path

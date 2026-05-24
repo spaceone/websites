@@ -57,7 +57,7 @@ class Resource(_Resource):
 
         pages = (Graffiti, Kunstwerke, Workshopangebot, Zeitungsartikel, Kontakt)
 
-        return navi % '\n\t'.join(link % dict(path=page.path, __name__=page.__name__) for page in pages)
+        return navi % '\n\t'.join(link % {'path': page.path, '__name__': page.__name__} for page in pages)
 
     @websiteproperty
     def website_meta_description(self):
@@ -101,7 +101,7 @@ class Resource(_Resource):
     def template_name(self):
         return 'website.tpl'
 
-    loaders = dict()
+    loaders = {}
 
     @classmethod
     def load(cls, path):
@@ -118,7 +118,7 @@ class Resource(_Resource):
         if client.request.headers.get('X-Requested-With', '').lower() == 'XMLHttpRequest'.lower():
             return
 
-        tplvars = dict(content=unicode(client.response.body))
+        tplvars = {'content': unicode(client.response.body)}
         for iname, prop in inspect.getmembers(self.__class__, lambda prop: isinstance(prop, websiteproperty)):
             tplvars[prop.name] = getattr(self, iname)
 

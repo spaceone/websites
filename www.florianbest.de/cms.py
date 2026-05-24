@@ -52,9 +52,9 @@ class Page(Resource, SQLResource):
     content = Column(String, default='', nullable=False)
     views = Column(Integer, default=0, nullable=False)
     options = Column(Integer, default=ENABLED, nullable=False)
-    indexed = type('Column', (object,), dict(default=False, type=type('type', (object,), dict(python_type=bool))))()
-    follow = type('Column', (object,), dict(default=False, type=type('type', (object,), dict(python_type=bool))))()
-    enabled = type('Column', (object,), dict(default=False, type=type('type', (object,), dict(python_type=bool))))()
+    indexed = type('Column', (object,), {'default': False, 'type': type('type', (object,), {'python_type': bool})})()
+    follow = type('Column', (object,), {'default': False, 'type': type('type', (object,), {'python_type': bool})})()
+    enabled = type('Column', (object,), {'default': False, 'type': type('type', (object,), {'python_type': bool})})()
 
     # TODO: create an wrapper arround Column, to add also the following properties: readonly, description, label, etc.
 
@@ -116,11 +116,11 @@ class Page(Resource, SQLResource):
         columns = super(Page, self).columns
         # add columns for the options of this page
         columns.update(
-            dict(
-                indexed=self.indexed,
-                follow=self.follow,
-                enabled=self.enabled,
-            )
+            {
+                'indexed': self.indexed,
+                'follow': self.follow,
+                'enabled': self.enabled,
+            }
         )
         # remove the hidden properties from our schema
         columns.pop('options')
@@ -381,7 +381,7 @@ class Pages(Resource):
     @method
     def GET(self, client, _):
         result = client.domain.session.query(Page.url, Page.title).all()
-        return dict(pages=({'url': ipage.url, 'title': ipage.title} for ipage in result), rel={'create-form': '/pages/add'})
+        return {'pages': ({'url': ipage.url, 'title': ipage.title} for ipage in result), 'rel': {'create-form': '/pages/add'}}
 
     GET.codec('application/json', 0.9)
     GET.conditions(is_user('root'))
@@ -412,6 +412,6 @@ class Navigation(Resource):
         result = client.domain.session.query(Page.url, Page.title, Page.options).all()
         # TODO: check permissions
         result = [obj for obj in result if (obj.options & Page.ENABLED) == Page.ENABLED]
-        return dict(navigation=({'url': ipage.url, 'title': ipage.title} for ipage in result))
+        return {'navigation': ({'url': ipage.url, 'title': ipage.title} for ipage in result)}
 
     GET.codec('application/json', 0.9)

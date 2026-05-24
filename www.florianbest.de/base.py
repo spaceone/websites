@@ -97,8 +97,8 @@ class _Resource(GettextResource, BaseResource):
 
 
 class Resource(_Resource):
-    loaders = dict()
-    config = dict()
+    loaders = {}
+    config = {}
 
     def __init__(self, *args, **kwargs):
         super(Resource, self).__init__(*args, **kwargs)
@@ -123,12 +123,12 @@ class Resource(_Resource):
     def template_vars(self, client):
         content = client.data
         if not isinstance(content, dict):
-            content = dict(content=content)
+            content = {'content': content}
         content.update(
-            dict(
-                user=client.user,
-                client=client,
-            )
+            {
+                'user': client.user,
+                'client': client,
+            }
         )
         return content
 
@@ -181,12 +181,12 @@ class Resource(_Resource):
         source = '%s%s' % (module.replace('_', '.'), source)
         if source.endswith('.pyc') or source.endswith('.pyo'):
             source = source[:-1]
-        tplvars = dict(
-            content=unicode(client.response.body),
-            user=client.user,
-            _=lambda x: x,
-            source=source,
-        )
+        tplvars = {
+            'content': unicode(client.response.body),
+            'user': client.user,
+            '_': lambda x: x,
+            'source': source,
+        }
         tplvars.update(self.config)
         for iname, prop in inspect.getmembers(self.__class__, lambda prop: isinstance(prop, websiteproperty)):
             tplvars[prop.name] = getattr(self, iname)

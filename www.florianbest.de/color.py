@@ -21,7 +21,7 @@ class Color(Resource):
     @method
     def GET(self, client, design='SF', layout='space', color='green'):
         color = dict(self.layoutcolors[color])
-        color.update(dict(layout=layout, design=design))
+        color.update({'layout': layout, 'design': design})
         return color
 
     @GET.codec('text/css')
@@ -33,7 +33,7 @@ class Color(Resource):
             raise ValueError(template_path)
         return tpl.generate(**client.data).render()  # doctype='html5'
 
-    loaders = dict()
+    loaders = {}
 
     @classmethod
     def load(cls, path):

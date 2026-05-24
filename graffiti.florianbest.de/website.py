@@ -11,19 +11,18 @@ from httoop.status import UNPROCESSABLE_ENTITY
 from .base import Resource
 
 try:
-	unicode
+    unicode
 except NameError:
-	unicode = str
+    unicode = str
 
 
 class Graffiti(Resource):
+    path = '/'
+    meta_description = 'Graffiti Auftragsarbeiten von Florian Best im Kreis Diepholz, Barnstorf und Bremen'
 
-	path = '/'
-	meta_description = 'Graffiti Auftragsarbeiten von Florian Best im Kreis Diepholz, Barnstorf und Bremen'
-
-	@method
-	def GET(self, client):
-		return '''
+    @method
+    def GET(self, client):
+        return """
 		<div style="margin:0 auto;line-height:25px;/*text-align:justify;*/">
 		<div style="float: left; width: 70%;">
 			<p>
@@ -76,45 +75,42 @@ class Graffiti(Resource):
 			<li>Leitung mehrtägiger Graffiti-Workshops mit Jugendlichen</li>
 			<li>Weiterbildung zum Jugendgruppenleiter im Rahmen der “JuLeiCa”-Ausbildung</li>
 		</ul>
-	</div>'''
+	</div>"""
 
-	@GET.codec('text/html')
-	def _text_html(self, client):
-		return client.data
+    @GET.codec('text/html')
+    def _text_html(self, client):
+        return client.data
 
 
 class Kunstwerke(Resource):
+    path = '/artworks/'
+    meta_description = 'Graffiti Auftragsarbeiten / Kunstwerke von Florian Best'
 
-	path = '/artworks/'
-	meta_description = 'Graffiti Auftragsarbeiten / Kunstwerke von Florian Best'
+    images = (
+        ('2018_Space_Workshop1_final1', dict(title='')),
+        ('2018_Space_Workshop1_final2', dict(title='Space - Juli 2018 -  Abschlusswerk Graffiti Workshop in Barnstorf')),
+        ('2018_Space_Workshop2_final1', dict(title='Space - Juli 2018 -  Abschlusswerk Graffiti Workshop in Barnstorf')),
+        ('2011_Space_DB_final1', dict(title='Space - Juli 2011 - in der Eingangshalle vom Bahnhof Barnstorf')),
+        ('2011_Space_DB_final2', dict(title='')),
+        ('2010_Space_DB_final', dict(content='Space - Juni 2010 - Deutsche Bahn Brücke in Barnstorf <br> Abschlusswerk meines Graffiti Workshops', title='Deutsche Bahn Brücke')),
+        ('2010_Space_DB_final2', dict(title='')),
+        ('2010_Space_DB_43', dict(title='')),
+        ('2010_Space_JZB_final2', dict(title='Space - 2010 - Jugendzentrum Barnstorf<br><br>')),
+        ('2010_JZB_final', dict(title='JZB - 2010 - Eingang des Jugendzentrum Barnstorf')),
+        ('2010_JZB_6', dict(title='')),
+        ('2018_Tux', dict(title='Linux Tux')),
+        ('2018_CafeFreiraumLeinwand', dict(title='Leinwand für das Cafe Freiraum Projekt in Diepholz')),
+    )
 
-	images = (
-		('2018_Space_Workshop1_final1', dict(title='')),
-		('2018_Space_Workshop1_final2', dict(title='Space - Juli 2018 -  Abschlusswerk Graffiti Workshop in Barnstorf')),
-		('2018_Space_Workshop2_final1', dict(title='Space - Juli 2018 -  Abschlusswerk Graffiti Workshop in Barnstorf')),
-		('2011_Space_DB_final1', dict(title='Space - Juli 2011 - in der Eingangshalle vom Bahnhof Barnstorf')),
-		('2011_Space_DB_final2', dict(title='')),
-		('2010_Space_DB_final', dict(
-			content='Space - Juni 2010 - Deutsche Bahn Brücke in Barnstorf <br> Abschlusswerk meines Graffiti Workshops',
-			title='Deutsche Bahn Brücke'
-		)),
-		('2010_Space_DB_final2', dict(title='')),
-		('2010_Space_DB_43', dict(title='')),
-		('2010_Space_JZB_final2', dict(title='Space - 2010 - Jugendzentrum Barnstorf<br><br>')),
-		('2010_JZB_final', dict(title='JZB - 2010 - Eingang des Jugendzentrum Barnstorf')),
-		('2010_JZB_6', dict(title='')),
-		('2018_Tux', dict(title='Linux Tux')),
-		('2018_CafeFreiraumLeinwand', dict(title='Leinwand für das Cafe Freiraum Projekt in Diepholz')),
-	)
+    @method
+    def GET(self, client):
+        return [dict(url=url, title=image['title'], content=image.get('content', image['title'])) for url, image in self.images]
 
-	@method
-	def GET(self, client):
-		return [dict(url=url, title=image['title'], content=image.get('content', image['title'])) for url, image in self.images]
-
-	@GET.codec('text/html')
-	def _text_html(self, client):
-		return '<p>%s</p>' % ('\n'.join(
-			'''
+    @GET.codec('text/html')
+    def _text_html(self, client):
+        return '<p>%s</p>' % (
+            '\n'.join(
+                """
 				<span class="bordered">
 					<a href="/Fotos/%(url)s.jpg" title="%(title)s">
 						<img src="/Fotos/%(url)s_thumb.jpg" alt="%(title)s" title="%(title)s" >
@@ -122,44 +118,48 @@ class Kunstwerke(Resource):
 					<br>%(content)s
 				</span>
 				<br>
-			''' % x for x in client.data
-		))
+			"""
+                % x
+                for x in client.data
+            )
+        )
 
 
 class Images(Resource):
+    path = '/images/{image}'
+    meta_description = 'Graffiti Auftragsarbeit'
 
-	path = '/images/{image}'
-	meta_description = 'Graffiti Auftragsarbeit'
+    def identify(self, client, path_segments):
+        if path_segments['image'] in Kunstwerke.images:
+            return self
 
-	def identify(self, client, path_segments):
-		if path_segments['image'] in Kunstwerke.images:
-			return self
+    @method
+    def GET(self, client):
+        image = client.path_segments['image']
+        image = dict(url=image)
+        image.update(Kunstwerke.images[image['url']])
+        return image
 
-	@method
-	def GET(self, client):
-		image = client.path_segments['image']
-		image = dict(url=image)
-		image.update(Kunstwerke.images[image['url']])
-		return image
-
-	@GET.codec('text/html')
-	def _text_html(self, client):
-		return '''<span class="bordered">
+    @GET.codec('text/html')
+    def _text_html(self, client):
+        return (
+            """<span class="bordered">
 			<a href="/Fotos/%(url)s.jpg">
 				<img src="/Fotos/%(url)s_thumb.jpg" alt="%(title)s" title="%(title)s">
 			</a>
 			<br>%(title)s
-		</span><br>''' % client.data
+		</span><br>"""
+            % client.data
+        )
 
 
 class Workshopangebot(Resource):
+    path = '/workshops/'
+    meta_description = 'Graffiti Workshop Angebot in Bremen, Diepholz, Barnstorf von Florian Best'
 
-	path = '/workshops/'
-	meta_description = 'Graffiti Workshop Angebot in Bremen, Diepholz, Barnstorf von Florian Best'
-
-	@method
-	def GET(self, client):
-		return '''
+    @method
+    def GET(self, client):
+        return """
 		Hier skizziere ich ungefähr meinen Workshopaufbau, zur Inspiration stelle ich einige Graffiti Hefte zur Verfügung.
 
 	<p>
@@ -242,51 +242,57 @@ class Workshopangebot(Resource):
 		<li>2nd Outline</li>
 		<li>1st Outline nachziehen</li>
 	</ol>
-	'''
+	"""
 
-	@GET.codec('text/html')
-	def _text_html(self, client):
-		return client.data
+    @GET.codec('text/html')
+    def _text_html(self, client):
+        return client.data
 
 
 class Zeitungsartikel(Resource):
+    path = '/zeitungsartikel/'
+    meta_description = 'Zeitungsartikel und Presseinformationen über Graffiti von Florian Best'
 
-	path = '/zeitungsartikel/'
-	meta_description = 'Zeitungsartikel und Presseinformationen über Graffiti von Florian Best'
+    @method
+    def GET(self, client):
+        return [
+            {
+                'src': '/zeitungsartikel/graffiti-in-neuem-glanz.jpg',
+                'title': 'Graffiti in neuem Glanz',
+                'source': 'Kreiszeitung Diepholz, 05. Dezember 2013, Seite 13',
+            },
+            {
+                'src': '/zeitungsartikel/sprayer-ganz-legal-im-bahnhof.jpg',
+                'title': 'Sprayer ganz legal im Bahnhof',
+                'source': 'Barnstorfer Wochenblatt, 13. Juli 2011, Titelseite',
+            },
+            {
+                'src': '/zeitungsartikel/techniken-der-graffiti-kunst.jpg',
+                'title': 'Techniken der Graffiti Kunst',
+                'source': 'Kreiszeitung Sommer 2010',
+            },
+        ]
 
-	@method
-	def GET(self, client):
-		return [{
-			'src': '/zeitungsartikel/graffiti-in-neuem-glanz.jpg',
-			'title': 'Graffiti in neuem Glanz',
-			'source': 'Kreiszeitung Diepholz, 05. Dezember 2013, Seite 13',
-		}, {
-			'src': '/zeitungsartikel/sprayer-ganz-legal-im-bahnhof.jpg',
-			'title': 'Sprayer ganz legal im Bahnhof',
-			'source': 'Barnstorfer Wochenblatt, 13. Juli 2011, Titelseite',
-		}, {
-			'src': '/zeitungsartikel/techniken-der-graffiti-kunst.jpg',
-			'title': 'Techniken der Graffiti Kunst',
-			'source': 'Kreiszeitung Sommer 2010',
-		}]
-
-	@GET.codec('text/html')
-	def _text_html(self, client):
-		return '<p>%s</p>' % '\n'.join('''
+    @GET.codec('text/html')
+    def _text_html(self, client):
+        return '<p>%s</p>' % '\n'.join(
+            """
 			<span class="bordered">
 				<img src="%(src)s" alt="%(title)s" title="%(title)s">
 				<br>Quelle: %(source)s
-			</span>''' % data for data in client.data)
+			</span>"""
+            % data
+            for data in client.data
+        )
 
 
 class Kontakt(Resource):
+    path = '/contact/'
+    meta_description = 'Kontaktaufnahme zu Florian Best für Graffiti Auftragsarbeiten und Workshops oder Presse und anderes Interesse'
 
-	path = '/contact/'
-	meta_description = 'Kontaktaufnahme zu Florian Best für Graffiti Auftragsarbeiten und Workshops oder Presse und anderes Interesse'
-
-	@method
-	def GET(self, client):
-		return """Kontakt per Formular oder E-Mail-Adresse: graffiti at florianbest punkt de
+    @method
+    def GET(self, client):
+        return """Kontakt per Formular oder E-Mail-Adresse: graffiti at florianbest punkt de
 <br/>
 <br/>
 <br/>
@@ -333,32 +339,33 @@ class Kontakt(Resource):
 	<input type="submit" value="Send" />
 	</p>
 </form>""".encode('utf-8')
-	GET.codec('text/html')
 
-	@method
-	def POST(self, client):
-		def escape(s):
-			return repr(s).lstrip('u')[1:-1]
+    GET.codec('text/html')
 
-		default_sender = unicode('bm9yZXBseUBmbG9yaWFuYmVzdC5kZQ=='.decode('base64'))
-		receiver = unicode('Z3JhZmZpdGlAZmxvcmlhbmJlc3QuZGU='.decode('base64'))
-		data = {}
-		for key, val in dict(client.request.body.data).items():
-			if isinstance(val, unicode):
-				val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
-			data[key] = val
-		data.setdefault('copy', False)
-		copy = data['copy'] == 'on'
-		subject = escape(data.get('subject', u''))
-		sender = escape(data.get('from', default_sender))
-		if u'@' not in sender:
-			copy = False
-			sender = default_sender
-		if data.get('name') and '<' not in data['name'] and '>' not in data['name']:
-			sender = u'%s <%s>' % (escape(data['name']), sender)
-			sender = sender.replace(u',', '')
+    @method
+    def POST(self, client):
+        def escape(s):
+            return repr(s).lstrip('u')[1:-1]
 
-		text = u'''Graffiti Contact form:
+        default_sender = unicode('bm9yZXBseUBmbG9yaWFuYmVzdC5kZQ=='.decode('base64'))
+        receiver = unicode('Z3JhZmZpdGlAZmxvcmlhbmJlc3QuZGU='.decode('base64'))
+        data = {}
+        for key, val in dict(client.request.body.data).items():
+            if isinstance(val, unicode):
+                val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
+            data[key] = val
+        data.setdefault('copy', False)
+        copy = data['copy'] == 'on'
+        subject = escape(data.get('subject', ''))
+        sender = escape(data.get('from', default_sender))
+        if '@' not in sender:
+            copy = False
+            sender = default_sender
+        if data.get('name') and '<' not in data['name'] and '>' not in data['name']:
+            sender = '%s <%s>' % (escape(data['name']), sender)
+            sender = sender.replace(',', '')
+
+        text = """Graffiti Contact form:
 %s %s <%s> wrote a message via the contact form.
 Website: %s
 Copy: %s
@@ -368,40 +375,50 @@ IP-Address: %s
 Hostname: %s
 Date: %s
 Message: %s
-		'''
-		try:
-			text = text % (
-				data['title'], data['name'], data['from'], data['website'], data['copy'],
-				data['subject'], '\n'.join('%s: %s' % (escape(key), escape(val)) for key, val in client.request.headers.items()), client.remote.ip,
-				client.remote.name, datetime.datetime.now().isoformat(), data['message']
-			)
-		except KeyError as exc:
-			raise UNPROCESSABLE_ENTITY('Missing field: %r' % (str(exc),))
+		"""
+        try:
+            text = text % (
+                data['title'],
+                data['name'],
+                data['from'],
+                data['website'],
+                data['copy'],
+                data['subject'],
+                '\n'.join('%s: %s' % (escape(key), escape(val)) for key, val in client.request.headers.items()),
+                client.remote.ip,
+                client.remote.name,
+                datetime.datetime.now().isoformat(),
+                data['message'],
+            )
+        except KeyError as exc:
+            raise UNPROCESSABLE_ENTITY('Missing field: %r' % (str(exc),))
 
-		message = MIMEText(text.encode('utf-8'), 'plain', 'UTF-8')
-		message['From'] = sender
-		message['To'] = receiver
-		message['Subject'] = subject
-		if copy:
-			message['CC'] = sender
+        message = MIMEText(text.encode('utf-8'), 'plain', 'UTF-8')
+        message['From'] = sender
+        message['To'] = receiver
+        message['Subject'] = subject
+        if copy:
+            message['CC'] = sender
 
-		connection = smtplib.SMTP('localhost')
-		connection.sendmail(sender, [receiver], message.as_string())
-		connection.quit()
-		return 'Vielen Dank für die E-Mail! Ich werde sobald wie möglich antworten.'
-	POST.accept('application/x-www-form-urlencoded')
-	POST.codec('text/html')
+        connection = smtplib.SMTP('localhost')
+        connection.sendmail(sender, [receiver], message.as_string())
+        connection.quit()
+        return 'Vielen Dank für die E-Mail! Ich werde sobald wie möglich antworten.'
+
+    POST.accept('application/x-www-form-urlencoded')
+    POST.codec('text/html')
 
 
 class Robots(Resource):
+    path = '/robots.txt'
 
-	path = '/robots.txt'
+    @method
+    def GET(self, client):
+        return 'User-agent: *\nDisallow: /contact/'
 
-	@method
-	def GET(self, client):
-		return 'User-agent: *\nDisallow: /contact/'
-	GET.codec('text/plain')
+    GET.codec('text/plain')
 
-#class InAktion(Resource): pass
-#class ProjektBewerbung(Resource): pass
-#class MeineAnfaenge(Resource): pass
+
+# class InAktion(Resource): pass
+# class ProjektBewerbung(Resource): pass
+# class MeineAnfaenge(Resource): pass

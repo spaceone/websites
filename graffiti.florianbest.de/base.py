@@ -9,130 +9,128 @@ from circuits.http.server.resource import Resource
 from circuits.http.utils import httphandler
 
 from genshi.template import TemplateLoader, TemplateNotFound, TemplateSyntaxError
-#from genshi.filters import Translator
+# from genshi.filters import Translator
 
 try:
-	unicode
+    unicode
 except NameError:
-	unicode = str
+    unicode = str
 
 
 class websiteproperty(property):
-
-	def __init__(self, fget, *a, **kw):
-		self.name = kw.pop('name', fget.__name__.replace('website_', ''))
-		property.__init__(self, fget, *a, **kw)
+    def __init__(self, fget, *a, **kw):
+        self.name = kw.pop('name', fget.__name__.replace('website_', ''))
+        property.__init__(self, fget, *a, **kw)
 
 
 class _Resource(Resource):
+    def frame_options(self, client):
+        return 'DENY'
 
-	def frame_options(self, client):
-		return 'DENY'
+    def xss_protection(self, client):
+        return '1; mode=block'
 
-	def xss_protection(self, client):
-		return '1; mode=block'
+    def content_type_options(self, client):
+        return 'nosniff'
 
-	def content_type_options(self, client):
-		return 'nosniff'
-
-	def permitted_cross_domain_policies(self, client):
-		return 'master-only'
+    def permitted_cross_domain_policies(self, client):
+        return 'master-only'
 
 
 class Resource(_Resource):
+    meta_description = ''
+    robots = 'index, follow'
 
-	meta_description = ''
-	robots = 'index, follow'
+    @websiteproperty
+    def website_title(self):
+        return self.__class__.__name__
 
-	@websiteproperty
-	def website_title(self):
-		return self.__class__.__name__
-
-	@websiteproperty
-	def website_navigation(self):
-		navi = '''<ul class="navi">
+    @websiteproperty
+    def website_navigation(self):
+        navi = """<ul class="navi">
 			<li><b>graffiti.FlorianBest.de</b></li>
 			%s
-		</ul>'''
+		</ul>"""
 
-		link = '<li><a href="%(path)s" title="%(__name__)s">%(__name__)s</a></li>'
-		from .website import Graffiti, Kunstwerke, Workshopangebot, Zeitungsartikel, Kontakt
-		pages = (Graffiti, Kunstwerke, Workshopangebot, Zeitungsartikel, Kontakt)
+        link = '<li><a href="%(path)s" title="%(__name__)s">%(__name__)s</a></li>'
+        from .website import Graffiti, Kunstwerke, Workshopangebot, Zeitungsartikel, Kontakt
 
-		return navi % '\n\t'.join(link % dict(path=page.path, __name__=page.__name__) for page in pages)
+        pages = (Graffiti, Kunstwerke, Workshopangebot, Zeitungsartikel, Kontakt)
 
-	@websiteproperty
-	def website_meta_description(self):
-		return self.meta_description
+        return navi % '\n\t'.join(link % dict(path=page.path, __name__=page.__name__) for page in pages)
 
-	@websiteproperty
-	def website_meta_robots(self):
-		return self.robots
+    @websiteproperty
+    def website_meta_description(self):
+        return self.meta_description
 
-	@websiteproperty
-	def website_doctype(self):
-		return '<!DOCTYPE html>'
+    @websiteproperty
+    def website_meta_robots(self):
+        return self.robots
 
-	@websiteproperty
-	def website_base(self):
-		return 'http://%s/' % self.parent.fqdn
+    @websiteproperty
+    def website_doctype(self):
+        return '<!DOCTYPE html>'
 
-	@websiteproperty
-	def website_meta(self):
-		return []
+    @websiteproperty
+    def website_base(self):
+        return 'http://%s/' % self.parent.fqdn
 
-	@websiteproperty
-	def website_links(self):
-		return []
+    @websiteproperty
+    def website_meta(self):
+        return []
 
-	@websiteproperty
-	def website_language(self):
-		return 'de'
+    @websiteproperty
+    def website_links(self):
+        return []
 
-	@property
-	def tpl_dir(self):
-		return 'website'
+    @websiteproperty
+    def website_language(self):
+        return 'de'
 
-	@property
-	def template_path(self):
-		if self.parent is self:
-			return
-		return os.path.join(self.parent.template_path, '%s/' % self.tpl_dir)
+    @property
+    def tpl_dir(self):
+        return 'website'
 
-	@property
-	def template_name(self):
-		return 'website.tpl'
+    @property
+    def template_path(self):
+        if self.parent is self:
+            return
+        return os.path.join(self.parent.template_path, '%s/' % self.tpl_dir)
 
-	loaders = dict()
+    @property
+    def template_name(self):
+        return 'website.tpl'
 
-	@classmethod
-	def load(cls, path):
-		if path not in cls.loaders:
-			cls.loaders[path] = TemplateLoader(path, auto_reload=True)
-		return cls.loaders[path]
+    loaders = dict()
 
-	@httphandler('request', priority=0.45)
-	def _wrap_html_content(self, client):
-		if not client.response.headers.get('Content-Type', '').startswith('text/html'):
-			return
-		if client.response.status in (204, 205):
-			return
-		if client.request.headers.get('X-Requested-With', '').lower() == 'XMLHttpRequest'.lower():
-			return
+    @classmethod
+    def load(cls, path):
+        if path not in cls.loaders:
+            cls.loaders[path] = TemplateLoader(path, auto_reload=True)
+        return cls.loaders[path]
 
-		tplvars = dict(content=unicode(client.response.body))
-		for iname, prop in inspect.getmembers(self.__class__, lambda prop: isinstance(prop, websiteproperty)):
-			tplvars[prop.name] = getattr(self, iname)
+    @httphandler('request', priority=0.45)
+    def _wrap_html_content(self, client):
+        if not client.response.headers.get('Content-Type', '').startswith('text/html'):
+            return
+        if client.response.status in (204, 205):
+            return
+        if client.request.headers.get('X-Requested-With', '').lower() == 'XMLHttpRequest'.lower():
+            return
 
-		try:
-			tpl = self.load(self.template_path).load(self.template_name)
-		#	translator = Translator(translate=client.kwargs['_'])
-		#	translator.setup(tpl)
-			client.response.body = tpl.generate(**tplvars).render(doctype='html5')
-		except TemplateNotFound:
-			raise INTERNAL_SERVER_ERROR('The template %r was not found in %r' % (self.template_name, self.template_path))
-		except TemplateSyntaxError:
-			raise
+        tplvars = dict(content=unicode(client.response.body))
+        for iname, prop in inspect.getmembers(self.__class__, lambda prop: isinstance(prop, websiteproperty)):
+            tplvars[prop.name] = getattr(self, iname)
 
-	def textdomain(self, client):
-		return client.domain.textdomain
+        try:
+            tpl = self.load(self.template_path).load(self.template_name)
+            # translator = Translator(translate=client.kwargs['_'])
+            # translator.setup(tpl)
+            client.response.body = tpl.generate(**tplvars).render(doctype='html5')
+        except TemplateNotFound:
+            raise INTERNAL_SERVER_ERROR('The template %r was not found in %r' % (self.template_name, self.template_path))
+        except TemplateSyntaxError:
+            raise
+
+    def textdomain(self, client):
+        return client.domain.textdomain

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 
 from httoop import TEMPORARY_REDIRECT, SEE_OTHER, BAD_REQUEST, MULTIPLE_CHOICES, URI

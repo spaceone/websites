@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-
-from six.moves.configparser import ConfigParser
+from configparser import ConfigParser
 import os.path
 import ast
 
 
-class HTML(object):
+class HTML:
     pass
 
 
@@ -50,5 +48,4 @@ def config():
     config['links'] += [CSS(x % config) for x in links['stylesheet']]
     config['links'] += [Link('icon', links['icon_type'], x % config) for x in links['icon']]
     config['links'] += [Link(**{y: z % config for y, z in x.items()}) for x in links.get('links', [])]
-    # import pdb; pdb.set_trace()
     return config

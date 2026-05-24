@@ -1,19 +1,12 @@
-# -*- coding: utf-8 -*-
-
 import importlib
 from pprint import pprint
 
-from six.moves.configparser import ConfigParser, NoSectionError
+from configparser import ConfigParser, NoSectionError
 
 from httoop import ServerHeader
 from circuits import handler
 from circuits.http.server.__main__ import HTTPServer
 from circuits.http.server.wsgi import Application
-
-try:
-    unicode
-except NameError:
-    unicode = str
 
 
 class Server(HTTPServer):
@@ -52,7 +45,7 @@ class Server(HTTPServer):
         response = client.response
 
         if response.status > 399:
-            print((int(response.status), unicode(request.method), tuple(request.protocol), unicode(request.uri)))
+            print((int(response.status), str(request.method), tuple(request.protocol), str(request.uri)))
             pprint(dict(request.headers))
 
 

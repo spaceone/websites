@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
 import os
-from six.moves.configparser import ConfigParser
+from configparser import ConfigParser
 
 from circuits import handler
 from circuits.http.server.resource import Domain as _Domain

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
+import base64
 import smtplib
 import datetime
 from email.mime.text import MIMEText
@@ -9,11 +7,6 @@ from circuits.http.server.resource import method
 from httoop.status import UNPROCESSABLE_ENTITY
 
 from .base import Resource
-
-try:
-    unicode
-except NameError:
-    unicode = str
 
 
 class Graffiti(Resource):
@@ -292,7 +285,7 @@ class Kontakt(Resource):
 
     @method
     def GET(self, client):
-        return """Kontakt per Formular oder E-Mail-Adresse: graffiti at florianbest punkt de
+        return b"""Kontakt per Formular oder E-Mail-Adresse: graffiti at florianbest punkt de
 <br/>
 <br/>
 <br/>
@@ -338,7 +331,7 @@ class Kontakt(Resource):
 	<p>
 	<input type="submit" value="Send" />
 	</p>
-</form>""".encode('utf-8')
+</form>"""
 
     GET.codec('text/html')
 
@@ -347,11 +340,11 @@ class Kontakt(Resource):
         def escape(s):
             return repr(s).lstrip('u')[1:-1]
 
-        default_sender = unicode('bm9yZXBseUBmbG9yaWFuYmVzdC5kZQ=='.decode('base64'))
-        receiver = unicode('Z3JhZmZpdGlAZmxvcmlhbmJlc3QuZGU='.decode('base64'))
+        default_sender = base64.b64decode('bm9yZXBseUBmbG9yaWFuYmVzdC5kZQ==').decode()
+        receiver = base64.b64decode('Z3JhZmZpdGlAZmxvcmlhbmJlc3QuZGU=').decode()
         data = {}
         for key, val in dict(client.request.body.data).items():
-            if isinstance(val, unicode):
+            if isinstance(val, str):
                 val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
             data[key] = val
         data.setdefault('copy', False)

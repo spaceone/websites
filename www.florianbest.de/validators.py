@@ -1,14 +1,5 @@
-# -*- coding: utf-8 -*-
-
 import re
 import copy
-
-try:
-    unicode
-except NameError:
-    unicode = str
-    basestring = (bytes, str)
-    long = int
 
 
 class SanitizeError(ValueError):
@@ -19,7 +10,7 @@ class SanitizeError(ValueError):
 
 
 # TODO: add mechanism to depend on other values
-class Sanitizer(object):
+class Sanitizer:
     """Base class for every sanitizer"""
 
     def __init__(self, **kwargs):
@@ -33,7 +24,11 @@ class Sanitizer(object):
         self.default = kwargs.get('default')
 
     def sanitize(self, value):
-        """:raises: :class:`~SanitizeError`"""
+        """
+        sanitize.
+
+        :raises: :class:`~SanitizeError`
+        """
         # the value is invalid, try to sanitize it
         try:
             value = self._sanitize(value)
@@ -142,7 +137,7 @@ class StringValidator(Sanitizer):
         super().__init__(**kwargs)
 
         # compile pattern
-        if isinstance(regex_pattern, basestring):
+        if isinstance(regex_pattern, str):
             regex_pattern = re.compile(regex_pattern, flags=re_flags)
         self.regex_pattern = regex_pattern
 
@@ -155,10 +150,10 @@ class StringValidator(Sanitizer):
 
         :param value: the value to validate.
         """
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             self.raise_validation_error('Value is not a string')
 
-        if not isinstance(value, unicode):
+        if not isinstance(value, str):
             # force UTF-8 ?!
             value = value.decode('utf-8')
 
@@ -178,7 +173,7 @@ class StringSanitizer(StringValidator):
     """IntSanitizer makes sure that the value is a string and sanitizes it"""
 
     def sanitize(self, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             value = str(value)
         return super().sanitize(value)
 
@@ -232,7 +227,7 @@ class FloatValidator(Sanitizer):
 
         :param value: the value to validate.
         """
-        return isinstance(value, long)
+        return isinstance(value, float)
 
 
 class FloatSanitizer(FloatValidator):
@@ -240,7 +235,7 @@ class FloatSanitizer(FloatValidator):
 
     def _sanitize(self, value, name):
         try:
-            return long(value)
+            return float(value)
         except Exception:
             raise SanitizeError()
 

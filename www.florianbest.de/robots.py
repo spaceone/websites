@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import itertools
 import operator
 
@@ -34,7 +32,7 @@ class Robots(_Resource):
         return new_d
 
 
-class RobotEntry(object):
+class RobotEntry:
     def __init__(self, user_agents, disallow=None, allow=None):
         self.user_agents = user_agents
         self.allow = set(allow or [])

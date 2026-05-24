@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
 import base64
 import datetime
 import smtplib
@@ -17,11 +13,7 @@ from circuits import handler
 
 from .base import Resource, _Resource
 from .ip2country import Ip2CountryResolver
-
-try:
-    unicode
-except NameError:
-    unicode = str
+from collections import UserString
 
 
 class Index(Resource):
@@ -76,7 +68,7 @@ class HTTPError(Resource):
 
 
 def image(string, image):
-    class String(unicode):
+    class String(UserString):
         pass
 
     string = String(string)
@@ -362,13 +354,13 @@ class Contact(Resource):
     @method
     def POST(self, client):
         def escape(s):
-            return repr(s).lstrip('u')[1:-1]
+            return repr(s)[1:-1]
 
-        default_sender = unicode(client.domain.config.get('contact', 'sender_address'))
-        receiver = unicode(client.domain.config.get('contact', 'receive_address'))
+        default_sender = str(client.domain.config.get('contact', 'sender_address'))
+        receiver = str(client.domain.config.get('contact', 'receive_address'))
         data = {}
         for key, val in dict(client.request.body.data).items():
-            if isinstance(val, unicode):
+            if isinstance(val, str):
                 val = val.encode('latin-1', 'replace').decode('utf-8', 'replace')
             data[key] = val
         data.setdefault('copy', False)
@@ -470,19 +462,18 @@ class Favicon(_Resource):
     @method
     def GET(self, client, color='white'):
         data = b'AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAD/////AAAAAA=='
-        data = base64.decodestring(data)
-        data = list(data)
+        data = bytearray(base64.b64decode(data))
         if color == 'green':
-            data[62:65] = '\x00\x80\x00'
+            data[62:65] = b'\x00\x80\x00'
         elif color == 'blue':
-            data[63:65] = '\x00\x00'
+            data[63:65] = b'\x00\x00'
         elif color == 'yellow':
-            data[62] = '\x00'
+            data[62] = b'\x00'
         elif color == 'red':
-            data[62:64] = '\x00\x00'
+            data[62:64] = b'\x00\x00'
         elif color == 'black':
-            data[62:65] = '\x00\x00\x00'
-        return b''.join(data)
+            data[62:65] = b'\x00\x00\x00'
+        return bytes(data)
 
     @GET.codec('image/x-icon')
     def _image_icon(self, client):

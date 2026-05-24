@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import inspect
 import os
 
@@ -10,11 +7,6 @@ from circuits.http.utils import httphandler
 
 from genshi.template import TemplateLoader, TemplateNotFound, TemplateSyntaxError
 # from genshi.filters import Translator
-
-try:
-    unicode
-except NameError:
-    unicode = str
 
 
 class websiteproperty(property):
@@ -118,7 +110,7 @@ class Resource(_Resource):
         if client.request.headers.get('X-Requested-With', '').lower() == 'XMLHttpRequest'.lower():
             return
 
-        tplvars = {'content': unicode(client.response.body)}
+        tplvars = {'content': str(client.response.body)}
         for iname, prop in inspect.getmembers(self.__class__, lambda prop: isinstance(prop, websiteproperty)):
             tplvars[prop.name] = getattr(self, iname)
 

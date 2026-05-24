@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # TODO: have a look at python-webcolors
 import os.path
 

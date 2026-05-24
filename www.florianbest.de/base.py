@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
 import os
 import sys
 import inspect
@@ -16,11 +12,6 @@ from circuits.http.server.i18n.gettext import GettextResource
 from circuits.http.server.i18n.content_language import ContentLanguage
 
 from .config import config
-
-try:
-    unicode
-except NameError:
-    unicode = str
 
 
 class websiteproperty(property):
@@ -182,7 +173,7 @@ class Resource(_Resource):
         if source.endswith('.pyc') or source.endswith('.pyo'):
             source = source[:-1]
         tplvars = {
-            'content': unicode(client.response.body),
+            'content': str(client.response.body),
             'user': client.user,
             '_': lambda x: x,
             'source': source,

@@ -42,7 +42,7 @@ class Cities(Base):
         return cls.__name__.lower()
 
 
-class Ip2CountryResolver(object):
+class Ip2CountryResolver:
     def __init__(self):
         engine = create_engine('sqlite:////home/spaceone/www/www.florianbest.de/ip2country2.db')
         engine.connect()

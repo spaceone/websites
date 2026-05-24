@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """wrapper for sqlalchemy"""
 
 from sqlalchemy import ForeignKey, Column, create_engine
@@ -51,7 +50,7 @@ def metabase(cls=None):
 
 
 @base
-class SQLResource(object):
+class SQLResource:
     """ """
 
     idproperties = ()  # TODO: get from uri_dispatcher

@@ -12,7 +12,7 @@ from .website import Graffiti, Kunstwerke, Images, Workshopangebot, Zeitungsarti
 
 class Domain(_Domain):
     def __init__(self, *args, **kwargs):
-        super(Domain, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self += ReverseProxy(channel=self.channel)
 
         self.www_path = os.path.realpath(os.path.dirname(__file__))

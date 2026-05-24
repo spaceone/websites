@@ -28,7 +28,7 @@ class Domain(_Domain):
         self.config = ConfigParser()
         self.config.read(os.path.join(self.www_path, 'config.cfg'))
 
-        super(Domain, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.aliases.add(self.fqdn.replace('www.', ''))
         self.localedir = self.config.get('i18n', 'localedir')
         self.textdomain = self.config.get('i18n', 'textdomain')

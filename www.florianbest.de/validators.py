@@ -94,7 +94,7 @@ class DictSanitizer(Sanitizer):
     """
 
     def __init__(self, sanitizers, allow_other_keys=False, **kwargs):
-        super(DictSanitizer, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.sanitizers = sanitizers
         self.allow_other_keys = allow_other_keys
 
@@ -137,7 +137,7 @@ class StringValidator(Sanitizer):
         :param minimum: the minimum length of the string
         :param maximum: the maximum length of the string
         """
-        super(StringValidator, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # compile pattern
         if isinstance(regex_pattern, basestring):
@@ -177,7 +177,7 @@ class StringSanitizer(StringValidator):
     def sanitize(self, value):
         if not isinstance(value, basestring):
             value = str(value)
-        return super(StringSanitizer, self).sanitize(value)
+        return super().sanitize(value)
 
 
 # TODO: choiceSanitizer

@@ -113,7 +113,7 @@ class Page(Resource, SQLResource):
     def columns(self):
         # manipulate the scheme
         # TODO: make this generic, how??? hybrid_property and mixin from sqlalchemy did not add the values into __dict__.. we can do this by hand
-        columns = super(Page, self).columns
+        columns = super().columns
         # add columns for the options of this page
         columns.update(
             {
@@ -135,7 +135,7 @@ class Page(Resource, SQLResource):
             return
         for url in (url_.rstrip('/'), '%s/' % (url_.rstrip('/'),)):
             try:
-                client.obj = super(Page, self).GET(client, url=url)
+                client.obj = super().GET(client, url=url)
             except NOT_FOUND:
                 pass
             else:
@@ -153,7 +153,7 @@ class Page(Resource, SQLResource):
 
     @websiteproperty
     def website_meta(self):
-        metas = super(Page, self).website_meta
+        metas = super().website_meta
         metas = [meta for meta in metas if meta.value not in ('keywords', 'description')]
         metas.append(Meta('description', self.meta_description))
         metas.append(Meta('keywords', self.meta_tags))
@@ -161,13 +161,13 @@ class Page(Resource, SQLResource):
 
     @websiteproperty
     def website_scripts(self):
-        scripts = super(Page, self).website_scripts
+        scripts = super().website_scripts
         scripts.append(JavaScript('/js/jquery-3.3.1.min.js'))
         return scripts
 
     @method
     def GET(self, client, _, url, count=True, **params):
-        obj = super(Page, self).GET(client, url=url)
+        obj = super().GET(client, url=url)
         if count:
             obj.views += 1  # increment page views for every request
 
@@ -224,7 +224,7 @@ class Page(Resource, SQLResource):
         data['options'] = options
 
         client.request.body.data = data
-        super(Page, self).PUT(client, url=url)
+        super().PUT(client, url=url)
         if client.response.status == 201:
             return _('The resource %r has successfully been created.') % url
         return _('The resource %r has successfully been modified.') % url
@@ -239,7 +239,7 @@ class Page(Resource, SQLResource):
         data = dict(client.request.body.data)
         url = data['url']
         try:
-            super(Page, self).GET(client, url=url)
+            super().GET(client, url=url)
         except NOT_FOUND:
             client.request.uri.path = url
             return self.PUT(client, _, url)
@@ -253,7 +253,7 @@ class Page(Resource, SQLResource):
 
     @method
     def DELETE(self, client, _, url, **params):
-        super(Page, self).DELETE(client, url=url)
+        super().DELETE(client, url=url)
         return _('The resource %r has successfully been removed.') % url
 
     DELETE.conditions(is_user('root'))
@@ -289,7 +289,7 @@ class Form(Resource):
 
     @websiteproperty
     def website_scripts(self):
-        scripts = super(Form, self).website_scripts
+        scripts = super().website_scripts
         scripts.append(JavaScript('/js/jquery-3.3.1.min.js'))
         return scripts
 
@@ -335,7 +335,7 @@ class FormAdd(Resource):
 
     @websiteproperty
     def website_scripts(self):
-        scripts = super(FormAdd, self).website_scripts
+        scripts = super().website_scripts
         scripts.append(JavaScript('/js/jquery-3.3.1.min.js'))
         return scripts
 

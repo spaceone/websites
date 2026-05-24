@@ -29,7 +29,7 @@ class Link(HTML):
 
 class CSS(Link):
     def __init__(self, href, **attrs):
-        super(CSS, self).__init__('stylesheet', 'text/css', href, **attrs)
+        super().__init__('stylesheet', 'text/css', href, **attrs)
 
 
 class JavaScript(HTML):

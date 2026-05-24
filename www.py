@@ -24,11 +24,11 @@ class Server(HTTPServer):
 
         add('-c', '--config', metavar='configuration file', help='Specifies an alternative per-user configuration file.')
 
-        super(Server, self).add_arguments()
+        super().add_arguments()
 
     def add_components(self):
         self.add_config()
-        super(Server, self).add_components()
+        super().add_components()
         self.add_domains()
 
     def add_config(self):

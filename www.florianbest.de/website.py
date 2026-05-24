@@ -63,7 +63,7 @@ class HTTPError(Resource):
     # client.request.headers.append('Accept', '*/*; q=0.1')
 
     def content_type(self, client):
-        return super(HTTPError, self).content_type(client) or client.method.available_mimetypes[0]
+        return super().content_type(client) or client.method.available_mimetypes[0]
 
     @handler('request_success', priority=2)
     def _on_request_done(self, event, evt, value):

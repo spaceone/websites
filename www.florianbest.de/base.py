@@ -77,7 +77,7 @@ class _Resource(GettextResource, BaseResource):
         return client.domain.textdomain
 
     def keyword_arguments(self, client):
-        kwargs = super(_Resource, self).keyword_arguments(client)
+        kwargs = super().keyword_arguments(client)
         argspec = inspect.getargspec(client.method.method)
         if '_' in argspec.args:
             try:
@@ -101,7 +101,7 @@ class Resource(_Resource):
     config = {}
 
     def __init__(self, *args, **kwargs):
-        super(Resource, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not Resource.config:
             Resource.config = config()
         self.config = Resource.config.copy()
@@ -112,7 +112,7 @@ class Resource(_Resource):
         return self.loaders[path]
 
     def register_methods(self):
-        super(Resource, self).register_methods()
+        super().register_methods()
         for method in self.methods:
             self.methods[method].codec('text/html', charset='UTF-8')(self.__class__._genshi_codec)
 

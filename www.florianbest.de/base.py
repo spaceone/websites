@@ -69,13 +69,13 @@ class _Resource(GettextResource, BaseResource):
 
     def keyword_arguments(self, client):
         kwargs = super().keyword_arguments(client)
-        argspec = inspect.getargspec(client.method.method)
+        argspec = inspect.getfullargspec(client.method.method)
         if '_' in argspec.args:
             try:
                 kwargs['_'] = client.translation.ugettext
             except AttributeError:  # Python 3
                 kwargs['_'] = client.translation.gettext
-        if argspec.keywords:
+        if argspec.varkw:
             kw = dict(client.request.uri.query)
             kw.update(kwargs)
             kwargs = kw

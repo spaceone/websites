@@ -49,6 +49,15 @@ class _Resource(GettextResource, BaseResource):
 	def content_security_policy(self, client):
 		return "default-src 'self'; script-src 'self' 'unsafe-inline'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'none'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /csp-violation;"
 
+	def referrer_policy(self, client):
+		return 'same-origin'
+
+	def feature_policy(self, cleint):
+		return
+
+	def permissions_policy(self, cleint):
+		return
+
 	def permitted_cross_domain_policies(self, client):
 		return 'master-only'
 

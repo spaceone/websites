@@ -8,7 +8,8 @@ from .base import _Resource
 
 
 class Robots(_Resource):
-    """This is the robots file for this domain located under /robots.txt
+    """
+    This is the robots file for this domain located under /robots.txt
 
     .. seealso:: http://www.robotstxt.org/norobots-rfc.txt
     """

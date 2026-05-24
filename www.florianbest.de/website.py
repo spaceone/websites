@@ -426,7 +426,8 @@ Message: %s
 
 # TODO: JSLoginForm
 class Login(Resource):
-    """This resource always sends a HTTP UNAUTHORIZED if the client did not provide
+    """
+    This resource always sends a HTTP UNAUTHORIZED if the client did not provide
     an WWW-Authenticate header.
     """
 
@@ -445,7 +446,8 @@ class Login(Resource):
 
 
 class Logout(Resource):
-    """This resource is a workaround for web browsers which does not support to drop
+    """
+    This resource is a workaround for web browsers which does not support to drop
     the credentials which they stored.
     We are redirecting the user to logout@domain.
     """

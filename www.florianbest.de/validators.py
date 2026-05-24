@@ -23,7 +23,8 @@ class Sanitizer(object):
     """Base class for every sanitizer"""
 
     def __init__(self, **kwargs):
-        """Init Sanitizer
+        """
+        Init Sanitizer
         :param required: Is the value required
         :param default: A default fallback value if the value is not set
         """
@@ -49,7 +50,8 @@ class Sanitizer(object):
         return value
 
     def raise_validation_error(self, message):
-        """Raise a validation error.
+        """
+        Raise a validation error.
 
         :param str message: the exception message.
         :raises: :class:`~SanitizeError`
@@ -61,7 +63,8 @@ class ListValidator(Sanitizer):
     """A list-validator"""
 
     def sanitize(self, value):
-        """Checks if the given value is an instance of list
+        """
+        Checks if the given value is an instance of list
 
         :param value: the value to validate.
         """
@@ -74,7 +77,8 @@ class DictValidator(Sanitizer):
     """A dict validator"""
 
     def sanitize(self, value):
-        """Checks if the given value is an instance of dict
+        """
+        Checks if the given value is an instance of dict
 
         :param value: the value to validate.
         """
@@ -84,7 +88,8 @@ class DictValidator(Sanitizer):
 
 
 class DictSanitizer(Sanitizer):
-    """makes sure the value is a dict and validates its fields.
+    """
+    makes sure the value is a dict and validates its fields.
 
     :param sanitizers: sanitizer to apply to the content of the sanitized dict
     :type sanitizers: a dict of :class:`~Sanitizer`
@@ -148,7 +153,8 @@ class StringValidator(Sanitizer):
         self.maximum = maximum
 
     def sanitize(self, value):
-        """Checks if the given value is an instance of str
+        """
+        Checks if the given value is an instance of str
 
         :param value: the value to validate.
         """
@@ -199,7 +205,8 @@ class IntValidator(Sanitizer):
     """A int validator"""
 
     def sanitize(self, value):
-        """Checks if the given value is an instance of int.
+        """
+        Checks if the given value is an instance of int.
 
         :param value: the value to validate.
         """
@@ -223,7 +230,8 @@ class FloatValidator(Sanitizer):
     """A float validator"""
 
     def sanitize(self, value):
-        """Checks if the given value is an instance of float.
+        """
+        Checks if the given value is an instance of float.
 
         :param value: the value to validate.
         """
@@ -244,7 +252,8 @@ class BoolValidator(Sanitizer):
     """A boolean validator"""
 
     def sanitize(self, value):
-        """Checks if the given value is an instance of bool.
+        """
+        Checks if the given value is an instance of bool.
 
         :param value: the value to validate.
         """

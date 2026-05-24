@@ -41,14 +41,14 @@ class JavaScript(HTML):
 def config():
     c = ConfigParser()
     c.read(os.path.join(os.path.dirname(__file__), 'config.cfg'))
-    config = dict((x, ast.literal_eval(y)) for x, y in c.items('website'))
+    config = {x: ast.literal_eval(y) for x, y in c.items('website')}
     config['meta'] = [Meta(x, ast.literal_eval(y)) for x, y in c.items('website_meta')]
     config['meta'] += [Meta(x, ast.literal_eval(y), True) for x, y in c.items('website_meta_http')]
 
-    links = dict((x, ast.literal_eval(y.replace('$', '%'))) for x, y in c.items('website_links'))
+    links = {x: ast.literal_eval(y.replace('$', '%')) for x, y in c.items('website_links')}
     config['links'] = []
     config['links'] += [CSS(x % config) for x in links['stylesheet']]
     config['links'] += [Link('icon', links['icon_type'], x % config) for x in links['icon']]
-    config['links'] += [Link(**dict((y, z % config) for y, z in x.items())) for x in links.get('links', [])]
+    config['links'] += [Link(**{y: z % config for y, z in x.items()}) for x in links.get('links', [])]
     # import pdb; pdb.set_trace()
     return config

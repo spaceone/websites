@@ -5,6 +5,7 @@ import operator
 
 from circuits.http.server.resource import method
 from .base import _Resource
+from collections import UserList
 
 
 class Robots(_Resource):
@@ -47,6 +48,6 @@ class RobotEntry(object):
         )
 
 
-class RobotEntries(list):
+class RobotEntries(UserList):
     def __str__(self):
         return '\n\n'.join(str(r) for r in self)

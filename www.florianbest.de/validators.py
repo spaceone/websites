@@ -30,13 +30,10 @@ class Sanitizer(object):
         """
         # FIXME: rethink this
         self.required = kwargs.get('required', True)
-        self.default = kwargs.get('default', None)
+        self.default = kwargs.get('default')
 
     def sanitize(self, value):
-        """
-        :raises: :class:`~SanitizeError`
-        """
-
+        """:raises: :class:`~SanitizeError`"""
         # the value is invalid, try to sanitize it
         try:
             value = self._sanitize(value)

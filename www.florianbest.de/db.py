@@ -15,27 +15,27 @@ Base = declarative_base()
 
 
 __all__ = (
-    'SQLResource',
     'Boolean',
+    'Column',
     'Date',
     'DateTime',
     'Enum',
     'Float',
-    'String',
+    'ForeignKey',
     'Integer',
+    'NullType',
     'Numeric',
+    'PickleType',
+    'SQLResource',
+    'String',
     'Text',
     'Time',
     'Unicode',
     'UnicodeText',
-    'NullType',
-    'PickleType',
-    'ForeignKey',
-    'Column',
     'create_engine',
-    'sessionmaker',
-    'hybrid_property',
     'hybrid_method',
+    'hybrid_property',
+    'sessionmaker',
 )
 
 
@@ -81,14 +81,14 @@ class SQLResource(object):
         return (self.options & bits) == bits
 
     def enable_options(self, bits):
-        self.options = self.options | bits
+        self.options |= bits
 
     def disable_options(self, bits):
-        self.options = self.options & (~bits)
+        self.options &= (~bits)
 
     def as_dict(self):
         columns = self.columns
-        return dict((key, val) for key, val in self.__dict__.items() if key in columns)
+        return {key: val for key, val in self.__dict__.items() if key in columns}
 
     @property
     def columns(self):
@@ -107,7 +107,7 @@ class SQLResource(object):
                 'readonly': getattr(column, 'readonly', False),
                 'type': column.type.python_type,
             }
-            if hasattr(schema[name]['default'], '__call__'):
+            if callable(schema[name]['default']):
                 schema[name]['default'] = str(schema[name]['default'](None))
         return schema
 
@@ -116,7 +116,7 @@ class SQLResource(object):
         pass
 
     def GET(self, client, **params):
-        props = dict([(prop, params[prop]) for prop in self.idproperties])
+        props = {prop: params[prop] for prop in self.idproperties}
         query = client.domain.session.query(self.__class__).filter_by(**props)
         try:
             obj = query.one()
@@ -126,7 +126,7 @@ class SQLResource(object):
 
     def PUT(self, client, **params):
         session = client.domain.session
-        props = dict([(prop, params[prop]) for prop in self.idproperties])
+        props = {prop: params[prop] for prop in self.idproperties}
         query = session.query(self.__class__).filter_by(**props)
         # TODO: can i use merge?
         try:

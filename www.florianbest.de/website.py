@@ -394,7 +394,7 @@ Date: %s
 Message: %s
 		"""
         try:
-            text = text % (
+            text %= (
                 data['title'],
                 data['name'],
                 data['from'],

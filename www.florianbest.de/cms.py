@@ -45,8 +45,8 @@ class Page(Resource, SQLResource):
     # language = Column(String, default="", nullable=False)
     author = Column(String(32), nullable=False)  # TODO: we could join into SQLUser here but this would be a dependency on it which we (at currently state) may not want?
     groups = Column(String, default='', nullable=False)  # TODO: implement
-    creation_date = Column(DateTime, default=lambda: datetime.now(), nullable=False)
-    modify_date = Column(DateTime, default=lambda: datetime.now(), nullable=False)
+    creation_date = Column(DateTime, default=datetime.now, nullable=False)
+    modify_date = Column(DateTime, default=datetime.now, nullable=False)
     meta_tags = Column(String(256), default='', nullable=False)
     meta_description = Column(String(256), default='', nullable=False)
     content = Column(String, default='', nullable=False)
